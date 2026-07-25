@@ -92,13 +92,27 @@ Add these in GitHub → **Settings** → **Secrets and variables** → **Actions
 
 | Secret                          | Value (from your local setup)                               |
 | ------------------------------- | ----------------------------------------------------------- |
-| `FIREBASE_SERVICE_ACCOUNT`      | Firebase service account JSON                               |
+| `FIREBASE_SERVICE_ACCOUNT`      | Firebase service account JSON (full key file contents)      |
 | `NEXT_PUBLIC_SANITY_PROJECT_ID` | Same as in `.env` (e.g. `056mgeru`)                         |
 | `NEXT_PUBLIC_SANITY_DATASET`    | `production`                                                |
 | `SANITY_API_READ_TOKEN`         | Sanity Viewer API token                                     |
 | `NEXT_PUBLIC_SITE_URL`          | `https://tradeinsolutions-6f0e9.web.app` (or custom domain) |
 
 Without the Sanity secrets, CI still builds but uses **fallback content** (no CMS data). Add the secrets so production deploys include Sanity content and webhook rebuilds fetch fresh data.
+
+### CI service account IAM (required for Functions deploy)
+
+Hosting deploy may succeed while **Functions deploy fails** with `iam.serviceAccounts.ActAs` on `PROJECT_ID@appspot.gserviceaccount.com`. Fix in [Google Cloud IAM](https://console.cloud.google.com/iam-admin/iam?project=tradeinsolutions-6f0e9):
+
+1. Firebase Console → **Project settings** → **Service accounts** → **Generate new private key** (if you have not already). Paste the JSON into GitHub secret `FIREBASE_SERVICE_ACCOUNT`.
+2. Note the service account email from that JSON (e.g. `firebase-adminsdk-xxx@tradeinsolutions-6f0e9.iam.gserviceaccount.com`).
+3. In Cloud Console → **IAM**, grant that email these **project-level** roles:
+   - **Firebase Admin** (or **Editor** — Hosting + Functions deploy)
+   - **Service Account User** — allows `ActAs` on `tradeinsolutions-6f0e9@appspot.gserviceaccount.com`
+   - **Cloud Functions Admin** — deploy Gen 2 functions
+4. If step 3 is not enough, open **IAM & Admin** → **Service accounts** → `tradeinsolutions-6f0e9@appspot.gserviceaccount.com` → **Permissions** → grant the CI service account **Service Account User** on that account specifically.
+
+Re-run the failed GitHub Actions workflow after IAM changes propagate (usually within a minute).
 
 ## 9. Sanity webhook → rebuild
 
