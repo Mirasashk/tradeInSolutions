@@ -9,8 +9,6 @@ env:
 jobs:
   build_and_preview:
     runs-on: ubuntu-latest
-    env:
-      NPM_CONFIG_CACHE: ${{ runner.temp }}/.npm
     steps:
       - uses: actions/checkout@v4
 
@@ -22,6 +20,8 @@ jobs:
 
       - name: Install dependencies
         run: |
+          export NPM_CONFIG_CACHE="${RUNNER_TEMP}/.npm"
+          mkdir -p "$NPM_CONFIG_CACHE"
           npm cache clean --force
           npm ci --no-audit --no-fund
 
