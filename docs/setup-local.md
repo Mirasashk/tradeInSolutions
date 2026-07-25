@@ -88,13 +88,17 @@ firebase deploy      # hosting + functions + rules
 
 ## 8. GitHub Actions secrets
 
-Add to repository secrets:
+Add these in GitHub → **Settings** → **Secrets and variables** → **Actions** → **Repository secrets**:
 
-- `FIREBASE_SERVICE_ACCOUNT` — JSON key from Firebase
-- `NEXT_PUBLIC_SANITY_PROJECT_ID`
-- `NEXT_PUBLIC_SANITY_DATASET`
-- `SANITY_API_READ_TOKEN`
-- `NEXT_PUBLIC_SITE_URL`
+| Secret                          | Value (from your local setup)                               |
+| ------------------------------- | ----------------------------------------------------------- |
+| `FIREBASE_SERVICE_ACCOUNT`      | Firebase service account JSON                               |
+| `NEXT_PUBLIC_SANITY_PROJECT_ID` | Same as in `.env` (e.g. `056mgeru`)                         |
+| `NEXT_PUBLIC_SANITY_DATASET`    | `production`                                                |
+| `SANITY_API_READ_TOKEN`         | Sanity Viewer API token                                     |
+| `NEXT_PUBLIC_SITE_URL`          | `https://tradeinsolutions-6f0e9.web.app` (or custom domain) |
+
+Without the Sanity secrets, CI still builds but uses **fallback content** (no CMS data). Add the secrets so production deploys include Sanity content and webhook rebuilds fetch fresh data.
 
 ## 9. Sanity webhook → rebuild
 
