@@ -9,6 +9,7 @@ import { MarkdownField } from "@/components/admin/MarkdownField";
 import { SaveBar } from "@/components/admin/SaveBar";
 import { StringListField } from "@/components/admin/StringListField";
 import { Button } from "@/components/ui/button";
+import { stripFirestoreId } from "@/lib/admin/strip-firestore-id";
 import {
   CMS_COLLECTIONS,
   deleteCollectionDoc,
@@ -33,9 +34,7 @@ function LocationEditForm() {
       docId,
     ).then((data) => {
       if (data) {
-        const rest = { ...data };
-        delete rest.id;
-        setForm(rest);
+        setForm(stripFirestoreId(data));
       }
       setLoading(false);
     });

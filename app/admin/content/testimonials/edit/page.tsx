@@ -6,6 +6,7 @@ import { Suspense, useCallback, useEffect, useState } from "react";
 import { FormField } from "@/components/admin/FormField";
 import { SaveBar } from "@/components/admin/SaveBar";
 import { Button } from "@/components/ui/button";
+import { stripFirestoreId } from "@/lib/admin/strip-firestore-id";
 import {
   CMS_COLLECTIONS,
   deleteCollectionDoc,
@@ -33,9 +34,7 @@ function TestimonialEditForm() {
       docId,
     ).then((data) => {
       if (data) {
-        const rest = { ...data };
-        delete rest.id;
-        setForm(rest);
+        setForm(stripFirestoreId(data));
       }
       setLoading(false);
     });

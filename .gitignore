@@ -46,6 +46,10 @@ yarn-error.log*
 .secret.local
 **/.secret.local
 
+# service account keys & local credential files
+*-firebase-adminsdk-*.json
+*service-account*.json
+
 # firebase
 .firebase/
 firebase-debug.log
@@ -79,6 +83,3 @@ public/~partytown/
 
 # vercel (not used, but harmless if added later)
 .vercel/
-
-# firebase admin sdk
-tradeinsolutions-6f0e9-firebase-adminsdk-fbsvc-8b933186b4.json

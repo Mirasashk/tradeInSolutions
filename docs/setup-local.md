@@ -97,12 +97,18 @@ See [content-entry-checklist.md](./content-entry-checklist.md) for field-by-fiel
 If you have existing Sanity content:
 
 ```bash
-NEXT_PUBLIC_SANITY_PROJECT_ID=056mgeru SANITY_API_READ_TOKEN=sk5UzlKizeWYMEReMFrrsMQE3lZaXD18FrCtxgCqVH4w4R3xL4XdITFO7bmDl3nhsAqVByNJQtP9BYpDXw2OqinVy35BIygASrM69vIZILLHAVYKGti41W9bitIm5xpQ9fgelGwKRZqPF1IBBjpqyavAwg3IJkstJbtlZnvA9IFXuA0NWLTN \
-  FIREBASE_SERVICE_ACCOUNT_JSON='' \
-  node scripts/migrate-sanity-to-firestore.mjs
+export GOOGLE_APPLICATION_CREDENTIALS=./your-service-account.json
+
+# Set Sanity vars in .env.local (never commit real tokens):
+# NEXT_PUBLIC_SANITY_PROJECT_ID=your-project-id
+# SANITY_API_READ_TOKEN=your-read-token
+
+node scripts/migrate-sanity-to-firestore.mjs
 ```
 
 Requires `@sanity/client` (dev dependency). Re-upload images in admin if needed.
+
+**Security:** Never paste API tokens into docs or commits. Keep `SANITY_API_READ_TOKEN` only in `.env` / `.env.local` (both are gitignored). If a token was ever pushed to GitHub, revoke it in [Sanity manage](https://sanity.io/manage) → API → Tokens and create a new one.
 
 ## 5. Resend (email)
 

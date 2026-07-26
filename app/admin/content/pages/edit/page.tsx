@@ -7,6 +7,7 @@ import { FormField } from "@/components/admin/FormField";
 import { MarkdownField } from "@/components/admin/MarkdownField";
 import { SaveBar } from "@/components/admin/SaveBar";
 import { Button } from "@/components/ui/button";
+import { stripFirestoreId } from "@/lib/admin/strip-firestore-id";
 import {
   CMS_COLLECTIONS,
   deleteCollectionDoc,
@@ -35,9 +36,7 @@ function PageEditForm() {
       docId,
     ).then((data) => {
       if (data) {
-        const rest = { ...data };
-        delete rest.id;
-        setForm(rest);
+        setForm(stripFirestoreId(data));
       }
       setLoading(false);
     });
