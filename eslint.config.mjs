@@ -13,6 +13,7 @@ const eslintConfig = defineConfig([
     "out/**",
     "functions/lib/**",
     "public/~partytown/**",
+    "scripts/**",
   ]),
 ]);
 

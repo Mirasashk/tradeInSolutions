@@ -1,69 +1,51 @@
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { PortableTextContent } from "@/components/shared/PortableTextContent";
-import { buildMetadata } from "@/lib/seo";
-import { getFaqItems } from "@/lib/sanity/fetch";
+import { FaqSearch } from "@/components/sections/FaqSearch";
+import { buildFaqPageJsonLd, buildMetadataFromCms } from "@/lib/seo";
+import { getFaqItems, getSiteSettings } from "@/lib/cms/fetch";
 import type { FaqItem } from "@/types";
 
-export const metadata = buildMetadata({
-  title: "FAQ",
-  path: "/faq/",
-});
+export async function generateMetadata() {
+  const settings = await getSiteSettings();
+  return buildMetadataFromCms({
+    title: "FAQ",
+    description:
+      "Frequently asked questions about selling your car in Irvine and Orange County.",
+    path: "/faq/",
+    settings,
+  });
+}
 
 const fallbackFaqs: FaqItem[] = [
   {
     _id: "1",
-    question: "How does the appraisal process work?",
-    answer: [
-      {
-        _type: "block",
-        children: [
-          {
-            _type: "span",
-            text: "Schedule a free appointment and receive a fair cash offer.",
-          },
-        ],
-      },
-    ],
+    question: "Do I need to schedule an appointment for an appraisal?",
+    answer: "Yes — scheduling ensures an appraiser is ready for you.",
   },
   {
     _id: "2",
-    question: "Do I need to buy another car from you?",
-    answer: [
-      {
-        _type: "block",
-        children: [
-          {
-            _type: "span",
-            text: "No. We buy cars outright with no purchase requirement.",
-          },
-        ],
-      },
-    ],
+    question: "Can you beat other dealer offers?",
+    anchorId: "compare-offers",
+    answer: "Bring any written offer — we will beat it or explain why.",
   },
 ];
 
 export default async function FaqPage() {
   const faqItems = (await getFaqItems()) as FaqItem[];
   const items = faqItems.length ? faqItems : fallbackFaqs;
+  const jsonLd = buildFaqPageJsonLd(items);
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <h1 className="text-4xl font-bold text-brand-navy">Frequently Asked Questions</h1>
-      <Accordion type="single" collapsible className="mt-8">
-        {items.map((item) => (
-          <AccordionItem key={item._id} value={item._id}>
-            <AccordionTrigger>{item.question}</AccordionTrigger>
-            <AccordionContent>
-              <PortableTextContent value={item.answer} />
-            </AccordionContent>
-          </AccordionItem>
-        ))}
-      </Accordion>
+      <p className="mt-4 text-muted-foreground">
+        Search our FAQ or browse common questions about selling your car.
+      </p>
+      <div className="mt-8">
+        <FaqSearch items={items} />
+      </div>
     </div>
   );
 }

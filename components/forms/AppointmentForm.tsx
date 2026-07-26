@@ -16,6 +16,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  trackAppointmentBooked,
+  trackFormStart,
+  trackFormSubmit,
+} from "@/lib/analytics";
 import { executeRecaptcha } from "@/lib/recaptcha";
 import {
   appointmentFormClientSchema,
@@ -27,6 +32,7 @@ export function AppointmentForm() {
     "idle",
   );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [photoNames, setPhotoNames] = useState<string[]>([]);
 
   const form = useForm<AppointmentFormClientValues>({
     resolver: zodResolver(appointmentFormClientSchema),
@@ -39,6 +45,9 @@ export function AppointmentForm() {
       vehicleYear: "",
       vehicleMake: "",
       vehicleModel: "",
+      vehicleMileage: "",
+      conditionDescription: "",
+      hasPreviousOffer: false,
       notes: "",
     },
   });
@@ -46,13 +55,20 @@ export function AppointmentForm() {
   async function onSubmit(values: AppointmentFormClientValues) {
     setStatus("loading");
     setErrorMessage(null);
+    trackFormSubmit("appointment");
 
     try {
       const recaptchaToken = await executeRecaptcha("appointment");
       const response = await fetch("/api/appointment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...values, recaptchaToken }),
+        body: JSON.stringify({
+          ...values,
+          notes: photoNames.length
+            ? `${values.notes ?? ""}\nPhotos: ${photoNames.join(", ")}`.trim()
+            : values.notes,
+          recaptchaToken,
+        }),
       });
 
       if (!response.ok) {
@@ -63,7 +79,9 @@ export function AppointmentForm() {
       }
 
       form.reset();
+      setPhotoNames([]);
       setStatus("success");
+      trackAppointmentBooked();
     } catch (error) {
       setStatus("error");
       setErrorMessage(error instanceof Error ? error.message : "Something went wrong");
@@ -82,7 +100,11 @@ export function AppointmentForm() {
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Your name" {...field} />
+                  <Input
+                    placeholder="Your name"
+                    {...field}
+                    onFocus={() => trackFormStart("appointment")}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -185,16 +207,68 @@ export function AppointmentForm() {
           </div>
           <FormField
             control={form.control}
+            name="vehicleMileage"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Mileage</FormLabel>
+                <FormControl>
+                  <Input placeholder="45000" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="conditionDescription"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Condition Description</FormLabel>
+                <FormControl>
+                  <Textarea rows={3} placeholder="Brief condition notes" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="hasPreviousOffer"
+            render={({ field }) => (
+              <FormItem className="flex items-center gap-2">
+                <FormControl>
+                  <input
+                    type="checkbox"
+                    checked={field.value}
+                    onChange={field.onChange}
+                    className="h-4 w-4"
+                  />
+                </FormControl>
+                <FormLabel className="!mt-0">I have a previous offer</FormLabel>
+              </FormItem>
+            )}
+          />
+          <div>
+            <FormLabel>Upload photos (optional, max 5)</FormLabel>
+            <Input
+              type="file"
+              accept="image/*"
+              multiple
+              className="mt-2"
+              onChange={(e) => {
+                const files = Array.from(e.target.files ?? []).slice(0, 5);
+                setPhotoNames(files.map((f) => f.name));
+              }}
+            />
+          </div>
+          <FormField
+            control={form.control}
             name="notes"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Notes (optional)</FormLabel>
+                <FormLabel>Additional Notes</FormLabel>
                 <FormControl>
-                  <Textarea
-                    rows={4}
-                    placeholder="Anything else we should know?"
-                    {...field}
-                  />
+                  <Textarea rows={3} placeholder="Anything else?" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

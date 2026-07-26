@@ -7,7 +7,6 @@ Step-by-step setup for the Trade-In Solutions Irvine Next.js site.
 - Node.js 22+
 - npm
 - Firebase CLI (`npm i -g firebase-tools`)
-- Sanity account (free tier)
 - Firebase project on **Blaze plan** (required for Functions outbound calls to Resend/reCAPTCHA)
 
 ## 1. Clone and install
@@ -20,112 +19,143 @@ npm install
 npm ci --prefix functions
 ```
 
-## 2. Sanity CMS
+## 2. Firebase
 
-1. Create a project at [sanity.io/manage](https://sanity.io/manage)
-2. Add to `.env.local`:
-   ```
-   NEXT_PUBLIC_SANITY_PROJECT_ID=your-project-id
-   NEXT_PUBLIC_SANITY_DATASET=production
-   SANITY_API_READ_TOKEN=your-read-token
-   ```
-3. Add your local origin to Sanity CORS origins (`http://localhost:3000`)
-4. Run Studio: `npx sanity dev` or visit `/studio` in dev mode
-5. Create content for: Site Settings, Navigation, FAQ items, Testimonials, Locations, Blog posts
-
-## 3. Firebase
-
-1. Create project `tradeinsolutions-irvine` (or update `.firebaserc`)
-2. Enable Firestore and upgrade to Blaze plan
+1. Project: `tradeinsolutions-6f0e9` (see `.firebaserc`)
+2. Enable **Firestore**, **Storage**, and **Authentication** (email/password)
 3. Register a Web App and copy config to `.env.local`:
+
    ```
    NEXT_PUBLIC_FIREBASE_API_KEY=
    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
-   NEXT_PUBLIC_FIREBASE_PROJECT_ID=
+   NEXT_PUBLIC_FIREBASE_PROJECT_ID=tradeinsolutions-6f0e9
    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
    NEXT_PUBLIC_FIREBASE_APP_ID=
-
    ```
-4. Set Functions secrets:
+
+4. For local builds and seed scripts, point at your service account key file (never commit this file):
+
+   ```bash
+   export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
+   ```
+
+   Or pass a file path via `FIREBASE_SERVICE_ACCOUNT_JSON` (same effect for scripts).
+
+5. Deploy rules, auth, and **Firestore indexes** (required for CMS queries in production):
+
+   ```bash
+   firebase deploy --only firestore:rules,firestore:indexes,storage,auth
+   ```
+
+   If FAQ/blog/locations pages are empty in dev but data exists in admin, indexes may not be deployed yet. The app falls back to in-memory sorting, but you should still deploy indexes for production performance.
+
+6. Set Functions secrets:
+
    ```bash
    firebase functions:secrets:set RESEND_API_KEY
    firebase functions:secrets:set RESEND_FROM_EMAIL
    firebase functions:secrets:set CONTACT_FORM_TO_EMAIL
    firebase functions:secrets:set RECAPTCHA_SECRET_KEY
-   firebase functions:secrets:set SANITY_WEBHOOK_SECRET
    firebase functions:secrets:set GITHUB_DISPATCH_TOKEN
    ```
 
-## 4. Resend (email)
+## 3. Admin user bootstrap
+
+1. Firebase Console → **Authentication** → **Add user** (email + password). Disable public sign-up.
+2. Copy the user's **UID**.
+3. Seed the admin document:
+
+   ```bash
+   export GOOGLE_APPLICATION_CREDENTIALS=./your-service-account.json
+
+   ADMIN_UID=your-firebase-auth-uid ADMIN_EMAIL=you@example.com \
+     node scripts/seed-admin.mjs
+   ```
+
+   `FIREBASE_SERVICE_ACCOUNT_JSON` also works if set to the **file path** or inline JSON — not just a bare filename unless you are in the repo root and the file exists there.
+
+4. Optional: seed default CMS singletons:
+
+   ```bash
+   GOOGLE_APPLICATION_CREDENTIALS=./tradeinsolutions-6f0e9-firebase-adminsdk-fbsvc-8b933186b4.json node scripts/seed-cms-defaults.mjs
+   ```
+
+5. Sign in at `/admin/login/` after `npm run dev`.
+
+## 4. CMS content
+
+- Edit content in the admin panel at `/admin/`.
+- Rich text fields use **Markdown**.
+- Images upload to Firebase Storage via admin forms.
+- After editing: **Publish content** (Firestore) then **Publish site** (triggers CI rebuild).
+
+See [content-entry-checklist.md](./content-entry-checklist.md) for field-by-field guidance.
+
+### Migrating from Sanity (one-time)
+
+If you have existing Sanity content:
+
+```bash
+NEXT_PUBLIC_SANITY_PROJECT_ID=056mgeru SANITY_API_READ_TOKEN=sk5UzlKizeWYMEReMFrrsMQE3lZaXD18FrCtxgCqVH4w4R3xL4XdITFO7bmDl3nhsAqVByNJQtP9BYpDXw2OqinVy35BIygASrM69vIZILLHAVYKGti41W9bitIm5xpQ9fgelGwKRZqPF1IBBjpqyavAwg3IJkstJbtlZnvA9IFXuA0NWLTN \
+  FIREBASE_SERVICE_ACCOUNT_JSON='' \
+  node scripts/migrate-sanity-to-firestore.mjs
+```
+
+Requires `@sanity/client` (dev dependency). Re-upload images in admin if needed.
+
+## 5. Resend (email)
 
 1. Create account at [resend.com](https://resend.com)
 2. Verify your sending domain
-3. Set `RESEND_FROM_EMAIL` to a verified address (e.g. `Trade-In Solutions <noreply@yourdomain.com>`)
+3. Set `RESEND_FROM_EMAIL` to a verified address
 4. Set `CONTACT_FORM_TO_EMAIL` to the inbox that receives leads
 
-## 5. reCAPTCHA v3
+## 6. reCAPTCHA v3
 
 1. Register site at [Google reCAPTCHA Admin](https://www.google.com/recaptcha/admin)
 2. Add `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` to `.env.local`
 3. Set `RECAPTCHA_SECRET_KEY` as a Firebase secret
 
-## 6. Local development
+## 7. Local development
 
 ```bash
-npm run dev          # Next.js at :3000
+npm run dev          # Next.js at :3000 (public site + /admin)
 firebase emulators:start  # Hosting :5000, Functions :5001, Firestore :8080
 ```
 
-Forms POST to `/api/contact` and `/api/appointment`, rewritten to Cloud Functions when deployed or emulated.
+Forms POST to `/api/contact`, `/api/appointment`, etc., rewritten to Cloud Functions when deployed or emulated.
 
-## 7. Build and deploy
+## 8. Build and deploy
 
 ```bash
-npm run build        # outputs to out/
-firebase deploy      # hosting + functions + rules
+npm run build        # outputs to out/ (fetches published Firestore CMS)
+firebase deploy      # hosting + functions + rules + storage
 ```
 
-## 8. GitHub Actions secrets
+## 9. GitHub Actions secrets
 
-Add these in GitHub → **Settings** → **Secrets and variables** → **Actions** → **Repository secrets**:
+| Secret                     | Purpose                                       |
+| -------------------------- | --------------------------------------------- |
+| `FIREBASE_SERVICE_ACCOUNT` | CI deploy + Firestore CMS fetch at build time |
+| `NEXT_PUBLIC_FIREBASE_*`   | Firebase web config for admin static bundle   |
+| `NEXT_PUBLIC_SITE_URL`     | Canonical site URL                            |
+| `GITHUB_DISPATCH_TOKEN`    | `cmsPublish` function triggers rebuild        |
 
-| Secret                          | Value (from your local setup)                               |
-| ------------------------------- | ----------------------------------------------------------- |
-| `FIREBASE_SERVICE_ACCOUNT`      | Firebase service account JSON (full key file contents)      |
-| `NEXT_PUBLIC_SANITY_PROJECT_ID` | Same as in `.env` (e.g. `056mgeru`)                         |
-| `NEXT_PUBLIC_SANITY_DATASET`    | `production`                                                |
-| `SANITY_API_READ_TOKEN`         | Sanity Viewer API token                                     |
-| `NEXT_PUBLIC_SITE_URL`          | `https://tradeinsolutions-6f0e9.web.app` (or custom domain) |
+Without `FIREBASE_SERVICE_ACCOUNT`, CI builds use **fallback defaults** from `lib/cms/defaults.ts`.
 
-Without the Sanity secrets, CI still builds but uses **fallback content** (no CMS data). Add the secrets so production deploys include Sanity content and webhook rebuilds fetch fresh data.
+### CI service account IAM
 
-### CI service account IAM (required for Functions deploy)
+Grant the CI service account: **Firebase Admin**, **Service Account User**, **Cloud Functions Admin**, **Secret Manager Admin**. See prior IAM notes in git history if deploy fails on `ActAs` or secrets.
 
-Hosting deploy may succeed while **Functions deploy fails** with `iam.serviceAccounts.ActAs` on `PROJECT_ID@appspot.gserviceaccount.com`. Fix in [Google Cloud IAM](https://console.cloud.google.com/iam-admin/iam?project=tradeinsolutions-6f0e9):
+## 10. Publish site workflow
 
-1. Firebase Console → **Project settings** → **Service accounts** → **Generate new private key** (if you have not already). Paste the JSON into GitHub secret `FIREBASE_SERVICE_ACCOUNT`.
-2. Note the service account email from that JSON (e.g. `firebase-adminsdk-xxx@tradeinsolutions-6f0e9.iam.gserviceaccount.com`).
-3. In Cloud Console → **IAM**, grant that email these **project-level** roles:
-   - **Firebase Admin** (or **Editor** — Hosting + Functions deploy)
-   - **Service Account User** — allows `ActAs` on `tradeinsolutions-6f0e9@appspot.gserviceaccount.com`
-   - **Cloud Functions Admin** — deploy Gen 2 functions
-4. If step 3 is not enough, open **IAM & Admin** → **Service accounts** → `tradeinsolutions-6f0e9@appspot.gserviceaccount.com` → **Permissions** → grant the CI service account **Service Account User** on that account specifically.
-
-Re-run the failed GitHub Actions workflow after IAM changes propagate (usually within a minute).
-
-## 9. Sanity webhook → rebuild
-
-In Sanity project settings, add a webhook:
-
-- URL: `https://your-domain.com/api/revalidate`
-- Header: `sanity-webhook-signature: <SANITY_WEBHOOK_SECRET>`
-- Trigger on publish
-
-This calls the `sanityRevalidate` function, which dispatches a GitHub `repository_dispatch` event to rebuild the static site.
+1. Edit content in `/admin/` → **Publish content**
+2. Click **Publish site** (calls `/api/cms-publish` with your ID token)
+3. GitHub Actions runs `repository_dispatch` event `cms-publish` and rebuilds static site
 
 ## Notes
 
-- **Static export** means no Draft Mode or Sanity Live Content. Content updates require a rebuild (via webhook CI).
-- **Sanity Studio** at `/studio` works in dev; for production CMS access, prefer `sanity deploy` or run Studio separately.
-- **Partytown** copies worker files on build (`npm run partytown`). Analytics scripts are env-gated.
+- **Static export**: public pages are built from published Firestore docs at build time.
+- **Admin** is client-side only; protected by Firebase Auth + Firestore/Storage rules.
+- **Partytown** copies worker files on build (`npm run partytown`).

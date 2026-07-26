@@ -1,3 +1,6 @@
 export { contactForm } from "./contactForm";
 export { appointmentForm } from "./appointmentForm";
-export { sanityRevalidate } from "./sanityRevalidate";
+export { beatOfferForm } from "./beatOfferForm";
+export { valueEstimatorForm } from "./valueEstimatorForm";
+export { appointmentReminder } from "./appointmentReminder";
+export { cmsPublish } from "./cmsPublish";

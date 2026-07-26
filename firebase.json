@@ -3,6 +3,28 @@
     "public": "out",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "cleanUrls": true,
+    "redirects": [
+      {
+        "source": "/blog/page/:page",
+        "destination": "/blog?page=:page",
+        "type": 301
+      },
+      {
+        "source": "/blog/page/:page/",
+        "destination": "/blog?page=:page",
+        "type": 301
+      },
+      {
+        "source": "/contact-2",
+        "destination": "/contact",
+        "type": 301
+      },
+      {
+        "source": "/contact-2/",
+        "destination": "/contact/",
+        "type": 301
+      }
+    ],
     "rewrites": [
       {
         "source": "/api/contact",
@@ -19,9 +41,23 @@
         }
       },
       {
-        "source": "/api/revalidate",
+        "source": "/api/beat-offer",
         "function": {
-          "functionId": "sanityRevalidate",
+          "functionId": "beatOfferForm",
+          "region": "us-west1"
+        }
+      },
+      {
+        "source": "/api/value-estimator",
+        "function": {
+          "functionId": "valueEstimatorForm",
+          "region": "us-west1"
+        }
+      },
+      {
+        "source": "/api/cms-publish",
+        "function": {
+          "functionId": "cmsPublish",
           "region": "us-west1"
         }
       }
@@ -44,6 +80,14 @@
   "firestore": {
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
+  },
+  "storage": {
+    "rules": "storage.rules"
+  },
+  "auth": {
+    "providers": {
+      "emailPassword": true
+    }
   },
   "emulators": {
     "hosting": {

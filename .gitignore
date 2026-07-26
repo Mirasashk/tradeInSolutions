@@ -79,3 +79,6 @@ public/~partytown/
 
 # vercel (not used, but harmless if added later)
 .vercel/
+
+# firebase admin sdk
+tradeinsolutions-6f0e9-firebase-adminsdk-fbsvc-8b933186b4.json

@@ -5,7 +5,7 @@ on:
     branches:
       - main
   repository_dispatch:
-    types: [sanity-publish]
+    types: [cms-publish]
 
 env:
   FIREBASE_PROJECT_ID: tradeinsolutions-6f0e9
@@ -29,20 +29,23 @@ jobs:
           npm cache clean --force
           npm ci --no-audit --no-fund
 
-      - name: Verify Sanity env for CI build
+      - name: Configure Firebase credentials for CMS build
         run: |
-          if [ -z "$NEXT_PUBLIC_SANITY_PROJECT_ID" ]; then
-            echo "::warning::NEXT_PUBLIC_SANITY_PROJECT_ID is not set. Build will use fallback content only."
-          fi
-        env:
-          NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_SANITY_PROJECT_ID }}
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > "${RUNNER_TEMP}/gcp-key.json"
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${RUNNER_TEMP}/gcp-key.json" >> "$GITHUB_ENV"
+          echo "FIREBASE_SERVICE_ACCOUNT_JSON<<EOF" >> "$GITHUB_ENV"
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' >> "$GITHUB_ENV"
+          echo "EOF" >> "$GITHUB_ENV"
 
       - run: npm run build
         env:
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://tradeinsolutions-6f0e9.web.app' }}
-          NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_SANITY_PROJECT_ID }}
-          NEXT_PUBLIC_SANITY_DATASET: ${{ secrets.NEXT_PUBLIC_SANITY_DATASET || 'production' }}
-          SANITY_API_READ_TOKEN: ${{ secrets.SANITY_API_READ_TOKEN }}
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
+          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+          NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
@@ -79,4 +82,4 @@ jobs:
 
       - uses: google-github-actions/setup-gcloud@v2
 
-      - run: npx firebase-tools deploy --only functions,firestore:rules --project tradeinsolutions-6f0e9 --non-interactive
+      - run: npx firebase-tools deploy --only functions,firestore:rules,storage --project tradeinsolutions-6f0e9 --non-interactive

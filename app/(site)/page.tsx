@@ -1,72 +1,111 @@
 import Link from "next/link";
 
+import { BulletSection } from "@/components/sections/BulletSection";
+import { HeroSection, VideoHeroEmbed } from "@/components/sections/HeroSection";
+import { ProcessSteps } from "@/components/sections/ProcessSteps";
+import { QuickActionsGrid } from "@/components/sections/QuickActionsGrid";
+import { SocialProofTicker } from "@/components/sections/SocialProofTicker";
+import { StatsTrustBar } from "@/components/sections/StatsTrustBar";
+import { TestimonialsSlider } from "@/components/sections/TestimonialsSlider";
+import { TrustBadgesRow } from "@/components/sections/TrustBadgesRow";
+import { YelpBadge } from "@/components/sections/YelpBadge";
+import { CaseStudiesSection } from "@/components/sections/CaseStudiesSection";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { buildMetadata } from "@/lib/seo";
+import { buildMetadataFromCms } from "@/lib/seo";
+import {
+  getCaseStudies,
+  getHomePage,
+  getSiteSettings,
+  getSocialProofItems,
+  getTestimonials,
+  getTrustBadges,
+} from "@/lib/cms/fetch";
+import type { SocialProofItem, Testimonial } from "@/types";
 
-export const metadata = buildMetadata({
-  title: "Sell Your Car for Cash in Irvine",
-  path: "/",
-});
+export async function generateMetadata() {
+  const settings = await getSiteSettings();
+  return buildMetadataFromCms({
+    title: "Sell Your Car for Cash in Irvine",
+    description:
+      "Free appraisal, same-day payment, and a hassle-free car selling experience in Orange County.",
+    path: "/",
+    settings,
+  });
+}
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [home, settings, testimonials, trustBadges, caseStudies, socialProof] =
+    await Promise.all([
+      getHomePage(),
+      getSiteSettings(),
+      getTestimonials(6),
+      getTrustBadges(),
+      getCaseStudies(),
+      getSocialProofItems(),
+    ]);
+
+  const tickerItems =
+    home.socialProofItems ??
+    (socialProof as SocialProofItem[]).map((item) => item.text);
+
   return (
     <div>
-      <section className="bg-brand-navy px-4 py-20 text-white">
-        <div className="mx-auto max-w-4xl text-center">
-          <h1 className="text-4xl font-bold md:text-5xl">
-            We Will Buy Your Car Today — Absolutely Hassle Free!
-          </h1>
-          <p className="mt-4 text-lg text-white/85">
-            Get a fair cash offer with a free appraisal. Same-day payment available.
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <Button
-              asChild
-              size="lg"
-              className="bg-brand-gold text-brand-navy hover:bg-brand-gold/90"
-            >
-              <Link href="/schedule-appointment/">Get Your Free Appraisal</Link>
-            </Button>
-            <Button
-              asChild
-              size="lg"
-              variant="outline"
-              className="border-white text-white hover:bg-white/10"
-            >
-              <Link href="tel:8884272302">Call (888) 427-2302</Link>
-            </Button>
-          </div>
-        </div>
-      </section>
+      {tickerItems.length ? <SocialProofTicker items={tickerItems} /> : null}
 
-      <section className="mx-auto max-w-6xl px-4 py-16">
-        <h2 className="text-center text-3xl font-bold text-brand-navy">
-          Quick Actions
-        </h2>
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            { title: "How It Works", href: "/about-us/" },
-            { title: "Compare Offers", href: "/faq/#compare-offers" },
-            { title: "Value My Car", href: "/schedule-appointment/" },
-            { title: "Schedule Appointment", href: "/schedule-appointment/" },
-          ].map((item) => (
-            <Card key={item.title}>
-              <CardHeader>
-                <CardTitle className="text-lg">{item.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Link
-                  href={item.href}
-                  className="text-sm font-medium text-brand-gold hover:underline"
-                >
-                  Learn more →
-                </Link>
-              </CardContent>
-            </Card>
-          ))}
+      <HeroSection
+        title={home.heroHeadline ?? ""}
+        subtitle={home.heroSubheadline}
+        backgroundImage={home.heroImage}
+        videoUrl={home.videoUrl}
+      >
+        <Button
+          asChild
+          size="lg"
+          className="bg-brand-gold text-brand-navy hover:bg-brand-gold/90"
+        >
+          <Link href={home.heroPrimaryCtaHref ?? "/schedule-appointment/"}>
+            {home.heroPrimaryCtaLabel ?? "Get Your Free Appraisal"}
+          </Link>
+        </Button>
+        <Button
+          asChild
+          size="lg"
+          variant="outline"
+          className="border-white text-white hover:bg-white/10"
+        >
+          <Link href={home.heroSecondaryCtaHref ?? "tel:8884272302"}>
+            {home.heroSecondaryCtaLabel ?? "Call (888) 427-2302"}
+          </Link>
+        </Button>
+      </HeroSection>
+
+      {home.videoUrl ? (
+        <div className="bg-brand-navy px-4 pb-12">
+          <VideoHeroEmbed url={home.videoUrl} title={home.heroHeadline ?? "Video"} />
         </div>
-      </section>
+      ) : null}
+
+      <QuickActionsGrid />
+
+      <BulletSection
+        headline={
+          home.whySellHeadline ?? "Why Should I Sell My Car to Trade-In Solutions?"
+        }
+        bullets={home.whySellBullets ?? []}
+      />
+
+      <BulletSection
+        id="compare-offers"
+        headline={home.compareHeadline ?? "Compare Other Offers to Trade-In Solutions"}
+        bullets={home.compareBullets ?? []}
+      />
+
+      <StatsTrustBar />
+      <ProcessSteps />
+      <TestimonialsSlider testimonials={testimonials as Testimonial[]} />
+      <TrustBadgesRow badges={trustBadges as never[]} />
+      <CaseStudiesSection caseStudies={caseStudies as never[]} />
+      <YelpBadge yelpUrl={settings.yelpUrl} rating={settings.yelpRating} />
     </div>
   );
 }

@@ -23,10 +23,14 @@ export function getFirebaseApp(): FirebaseApp | undefined {
   }
 
   if (!app) {
-    app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+    app = getApps().length ? getApps()[0]! : initializeApp(firebaseConfig);
   }
 
   return app;
+}
+
+export function isFirebaseConfigured(): boolean {
+  return Boolean(firebaseConfig.apiKey && firebaseConfig.appId);
 }
 
 export async function initFirebasePerformance(): Promise<

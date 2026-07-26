@@ -9,7 +9,7 @@ function getDb() {
 }
 
 export async function saveLead(
-  type: "contact" | "appointment",
+  type: "contact" | "appointment" | "beat_offer" | "value_estimator",
   data: Record<string, unknown>,
 ) {
   await getDb()

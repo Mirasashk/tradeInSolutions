@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>site-outline-features.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid@9.4.3/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="trade-in-solutions-irvine--site-outline--feature-specification">Trade-In Solutions Irvine — Site Outline &amp; Feature Specification</h1>
+<blockquote>
+<p>Complete breakdown of all pages, sections, content, and features for the Next.js rebuild.
+Based on audit of https://tradeinsolutions-irvine.com/ (WordPress site)
+Date: 2026-07-25</p>
+</blockquote>
+<hr>
+<h2 id="executive-summary">Executive Summary</h2>
+<p><strong>Business:</strong> Trade-In Solutions Irvine<br>
+<strong>What they do:</strong> Buy cars for cash — free appraisal, same-day payment, hassle-free process<br>
+<strong>Target audience:</strong> Car owners in Orange County, Los Angeles, and San Diego areas looking to sell their vehicle quickly and fairly<br>
+<strong>Primary goal:</strong> Generate leads (appointment bookings, phone calls, form submissions)<br>
+<strong>Secondary goal:</strong> Build trust through testimonials, blog content, and transparent process info</p>
+<p><strong>Current site issues:</strong></p>
+<ul>
+<li>Built on WordPress — hard to customize, slow, poor mobile experience</li>
+<li>Outdated design and imagery</li>
+<li>No clear conversion funnel</li>
+<li>Blog content is old (last posts from ~2020)</li>
+<li>Contact form is basic, no validation</li>
+<li>No structured data for SEO</li>
+<li>No appointment scheduling integration</li>
+<li>Locations/directions are text-only, no embedded map</li>
+</ul>
+<hr>
+<h2 id="site-map">Site Map</h2>
+<pre class="hljs"><code><div>/
+├── /about-us
+├── /faq
+├── /schedule-appointment
+├── /testimonials
+├── /branch-locations
+├── /blog
+│   ├── /blog/page/2
+│   └── /blog/[slug]          (individual posts)
+├── /contact
+└── /privacy-policy           (split from About Us)
+</div></code></pre>
+<hr>
+<h2 id="page-by-page-breakdown">Page-by-Page Breakdown</h2>
+<hr>
+<h3 id="1-homepage">1. Homepage (<code>/</code>)</h3>
+<p><strong>SEO Target:</strong> &quot;sell my car irvine&quot;, &quot;cash for cars orange county&quot;, &quot;car buyers irvine ca&quot;</p>
+<h4 id="sections-top-to-bottom">Sections (top to bottom):</h4>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Section</th>
+<th>Content</th>
+<th>CMS-Driven?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Announcement Bar</strong></td>
+<td>&quot;FREE APPRAISALS — Call (888) 427-2302&quot;</td>
+<td>✅ Global setting</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Hero</strong></td>
+<td>Headline: &quot;We Will Buy Your Car Today — Absolutely Hassle Free!&quot;<br>Subheadline about fair offers<br>CTA: &quot;Get Your Free Appraisal&quot; (→ /schedule-appointment)<br>Secondary CTA: &quot;Call (888) 427-2302&quot; (tel: link)<br>Background: High-quality image of happy customer + car</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Quick Actions Grid</strong></td>
+<td>4 icon cards:<br>• How It Works → /about-us<br>• Got Previous Offers? → /faq#compare-offers<br>• Value My Car → /schedule-appointment<br>• Schedule Appointment → /schedule-appointment</td>
+<td>❌ Static</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Why Sell to Us</strong></td>
+<td>Headline: &quot;Why Should I Sell My Car to Trade-In Solutions?&quot;<br>Bullet points highlighting key differentiators</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Compare Offers</strong></td>
+<td>Headline: &quot;Compare Other Offers to Trade-In Solutions&quot;<br>7 bullet points (free appraisal, experts, market trends, 7-day offer, explained appraisal, immediate check, 45-min process)</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Stats/Trust Bar</strong></td>
+<td>&quot;28+ Years Experience&quot; • &quot;Thousands of Happy Customers&quot; • &quot;Same-Day Payment&quot; • &quot;45-Min Process&quot;</td>
+<td>❌ Static</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>Process Steps</strong></td>
+<td>Visual 3-step:<br>1. Make an Appointment<br>2. Inspection &amp; Appraisal<br>3. Get a Check</td>
+<td>❌ Static</td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong>Testimonials Slider</strong></td>
+<td>6 rotating testimonials with name, location, car model<br>Link to full /testimonials page</td>
+<td>✅ (pulls from CMS)</td>
+</tr>
+<tr>
+<td>9</td>
+<td><strong>CTA Banner</strong></td>
+<td>Dark blue bar: &quot;GOT QUESTIONS? CONTACT US AT (888) 427-2302&quot;<br>Sticky on scroll (optional)</td>
+<td>✅ Global setting</td>
+</tr>
+<tr>
+<td>10</td>
+<td><strong>Yelp Badge</strong></td>
+<td>&quot;People Love Us on Yelp&quot; with rating</td>
+<td>❌ Static</td>
+</tr>
+<tr>
+<td>11</td>
+<td><strong>Footer</strong></td>
+<td>Logo, address, phone, email, hours, quick links, social icons, privacy policy link</td>
+<td>✅ Global setting</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="2-about-us-about-us">2. About Us (<code>/about-us</code>)</h3>
+<p><strong>SEO Target:</strong> &quot;about trade in solutions irvine&quot;, &quot;sell car irvine company&quot;</p>
+<h4 id="sections">Sections:</h4>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Section</th>
+<th>Content</th>
+<th>CMS-Driven?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Hero</strong></td>
+<td>&quot;About Trade-In Solutions Irvine&quot;</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Our Story</strong></td>
+<td>28+ years experience narrative<br>Founders' story about dealer frustration<br>&quot;We listened to what consumers had to say&quot;</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>3-Step Process</strong></td>
+<td>Visual cards:<br>1. Make an appointment<br>2. Have an inspection and appraisal<br>3. Get a check</td>
+<td>❌ Static</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Confidence Guarantee</strong></td>
+<td>&quot;So confident... go to a traditional dealer first, get a written offer, then bring it to us&quot;</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>CTA</strong></td>
+<td>&quot;Don't wait — call today to make an appointment&quot;</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Team/Appraisers</strong></td>
+<td><em>(NEW)</em> Photos and bios of key staff (Adel Moini, etc.)</td>
+<td>✅ NEW</td>
+</tr>
+</tbody>
+</table>
+<p><strong>NOTE:</strong> Current site has Privacy Policy embedded here. <strong>Recommendation:</strong> Split Privacy Policy to its own <code>/privacy-policy</code> page and link from footer.</p>
+<hr>
+<h3 id="3-faq-faq">3. FAQ (<code>/faq</code>)</h3>
+<p><strong>SEO Target:</strong> &quot;how to sell my car irvine&quot;, &quot;sell financed car california&quot;, &quot;sell leased car orange county&quot;</p>
+<p><strong>Schema:</strong> FAQPage structured data for rich snippets</p>
+<h4 id="questions-all-cms-driven-expandable-accordion">Questions (all CMS-driven, expandable accordion):</h4>
+<ol>
+<li>Do I need to schedule an appointment for an appraisal?</li>
+<li>Have you heard of Autotrader.com trade in marketplace?</li>
+<li>How can I get a quick estimate of my vehicle's value?</li>
+<li>What if my car is leased?</li>
+<li>What if my car is financed?</li>
+<li>Are you only interested in popular/newer cars?</li>
+<li>Do I need to contact DMV for information prior to my appointment?</li>
+<li>Is it better to sell my car myself?</li>
+<li>Is it better to do repairs before coming in?</li>
+<li>How is TIS a truly stress-free alternative?</li>
+<li>Do I need to bring my car in or can it be done over the phone?</li>
+<li>Can you beat other dealer offers? <em>(NEW — based on current content)</em></li>
+</ol>
+<p><strong>Each answer:</strong> Rich text with links to /schedule-appointment where relevant.</p>
+<hr>
+<h3 id="4-schedule-appointment-schedule-appointment">4. Schedule Appointment (<code>/schedule-appointment</code>)</h3>
+<p><strong>SEO Target:</strong> &quot;schedule car appraisal irvine&quot;, &quot;sell my car appointment orange county&quot;</p>
+<p><strong>This is the PRIMARY conversion page.</strong></p>
+<h4 id="sections">Sections:</h4>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Section</th>
+<th>Content</th>
+<th>CMS-Driven?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Hero</strong></td>
+<td>&quot;Selling Your Vehicle? Experience a Hassle-Free way to get the highest value!&quot;<br>&quot;We Will Buy Your Car Today&quot;</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>3-Step Process</strong></td>
+<td>Same as homepage but larger</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Appointment Form</strong></td>
+<td><em>(CRITICAL)</em><br>Fields:<br>• Name (required)<br>• Phone (required)<br>• Email (required)<br>• Preferred Date<br>• Preferred Time<br>• Vehicle Year/Make/Model<br>• Vehicle Mileage<br>• Brief Condition Description<br>• Upload photos (optional, 3-5 max)<br>• &quot;I have a previous offer&quot; checkbox<br>• reCAPTCHA v3<br>Submit → Email to info@tradeinsolutions-irvine.com + auto-reply to customer</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Why Us Grid</strong></td>
+<td>6 benefit cards:<br>• 45 Mins or Less<br>• 7 Days or 350 Miles<br>• We Pay the Same Day<br>• Fair Offers<br>• We Are Experts<br>• We Take Care of Everything</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Yelp Badge</strong></td>
+<td>Social proof</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Locations Sidebar</strong></td>
+<td>Quick links to /branch-locations</td>
+<td>❌</td>
+</tr>
+</tbody>
+</table>
+<p><strong>NEW FEATURE — Appointment Scheduling Integration:</strong></p>
+<ul>
+<li>Option A: Embed Calendly/Acuity for self-service booking</li>
+<li>Option B: Form-only (current behavior) with phone follow-up</li>
+<li><strong>Recommendation:</strong> Start with enhanced form, add Calendly later</li>
+</ul>
+<hr>
+<h3 id="5-testimonials-testimonials">5. Testimonials (<code>/testimonials</code>)</h3>
+<p><strong>SEO Target:</strong> &quot;trade in solutions reviews&quot;, &quot;sell car irvine reviews&quot;</p>
+<p><strong>Schema:</strong> Review structured data (aggregateRating + individual reviews)</p>
+<h4 id="content">Content:</h4>
+<ul>
+<li>Yelp badge at top</li>
+<li>Grid/list of all testimonials</li>
+<li>Each testimonial card:
+<ul>
+<li>Quote text</li>
+<li>Customer name</li>
+<li>Location</li>
+<li>Car model</li>
+<li>Star rating (if available)</li>
+<li>Date (if available)</li>
+</ul>
+</li>
+</ul>
+<p><strong>Current testimonials to migrate (~25+):</strong>
+K. Mizban (Beverly Hills, Lincoln Town Car), Jake Levonthal (Los Angeles, Saab 9/5), Farhad M. (West Hollywood, Honda Civic), J. Tisdale (Irvine, Suzuki Esteem), S. Cornell (Irvine, VW Golf), E. Kang (Irvine, Audi A8), Maria A. (Huntington Beach, VW Jetta), Bahareh P. (Newport Beach, VW Beetle), Leonard K. (South Pasadena, Lexus GS350), Everette P. (Newport Beach, Honda Pilot), Jamal Y. (Laguna Hills, Toyota Touareg), Shannon P. (Rancho Santa Margarita, Jeep Wrangler), Morbani M. (Orange, Jeep Cherokee), Joshua N. (Irvine, Toyota Tundra), Froilan B. (Irvine, Nissan 350Z), Judy O. (Los Angeles, Ford Expedition), Chris S. (Fullerton, Audi R8), Depak P. (San Clemente, MBZ G500), Gil B. (Costa Mesa, Hyundai Accent), Jacklyn A. (San Diego, BMW 325i), Kaitte H. (Mission Viejo, Hyundai Tucson), Kaliraj G. (Irvine, Hyundai Santa Fe), Reagan G. (Ontario, MBZ C300), Kaveh S. (Dana Point, BMW 330ci), Charlie L. (Tustin, BMW 325i), Chris W. (Irvine, Nissan Armada), Julie P. (Irvine, BMW 128i), Cesar L. (Norwalk, VW GTI)</p>
+<hr>
+<h3 id="6-branch-locations-branch-locations">6. Branch Locations (<code>/branch-locations</code>)</h3>
+<p><strong>SEO Target:</strong> &quot;car buyers irvine&quot;, &quot;sell car west los angeles&quot;, &quot;trade in solutions location&quot;</p>
+<p><strong>Schema:</strong> LocalBusiness + multiple location markup</p>
+<h4 id="locations">Locations:</h4>
+<p><strong>Irvine / Orange County (Main)</strong></p>
+<ul>
+<li>9891 Irvine Center Drive, Suite 200, Irvine, CA 92618</li>
+<li>Phones: (888) 427-2302, (949) 398-8232</li>
+<li>Embedded Google Map</li>
+<li>Driving directions (from 405 South and 5 North)</li>
+<li>Photo of building exterior</li>
+<li>&quot;Schedule an Appointment&quot; CTA</li>
+</ul>
+<p><strong>West Los Angeles (Field Appraisal Only)</strong></p>
+<ul>
+<li>11400 W. Olympic Blvd., Suite 650, West Los Angeles, CA 90064</li>
+<li>Embedded Google Map</li>
+<li>Photo of building</li>
+<li>Note: &quot;Field Appraisal Only — Our appraiser will come to you!&quot;</li>
+</ul>
+<p><strong>San Diego / Murrieta</strong> <em>(mentioned in nav but no details on current site)</em></p>
+<ul>
+<li>Need to confirm with client if still active</li>
+<li>If active: Add location details</li>
+</ul>
+<hr>
+<h3 id="7-blog-blog--blogslug">7. Blog (<code>/blog</code> + <code>/blog/[slug]</code>)</h3>
+<p><strong>SEO Target:</strong> Long-tail keywords around car selling, maintenance, market trends</p>
+<h4 id="blog-listing-page-blog">Blog Listing Page (<code>/blog</code>):</h4>
+<ul>
+<li>Grid of blog post cards</li>
+<li>Each card: Featured image, title, excerpt, date, category</li>
+<li>Pagination (page 2, 3, etc.)</li>
+<li>Category filter (optional)</li>
+</ul>
+<h4 id="individual-blog-post-blogslug">Individual Blog Post (<code>/blog/[slug]</code>):</h4>
+<ul>
+<li>Rich text content (Portable Text)</li>
+<li>Featured image</li>
+<li>Author (if applicable)</li>
+<li>Published date</li>
+<li>Related posts</li>
+<li>CTA: &quot;Ready to sell your car? Schedule an appointment&quot;</li>
+</ul>
+<h4 id="current-posts-to-migrate">Current posts to migrate:</h4>
+<ol>
+<li>Reduce Your Fuel Consumption (Nov 12)</li>
+<li>Dealing With Car Corrosion (Oct 22)</li>
+<li>Hybrid, Plug-in Hybrid, or Fully Electric Car? (Oct 8)</li>
+<li>How Does Instant Offer Process Work? (Sep 17)</li>
+<li>What is a Salvage Title Car and How to Sell It? (Aug 27)</li>
+<li>Selling a Used Car: Private Buyer or Dealer? (Aug 20)</li>
+<li>How to Prepare for a Recession? Or the Future of Used-Car Market (Aug 6)</li>
+<li>How to Detect Car's Air Conditioner Problems (Jul 30)</li>
+<li>How to Take Care of Car Battery (Jul 23)</li>
+<li>How to Check Your Car Tires (Jul 18)</li>
+</ol>
+<p><em>(Note: These are old. Client should plan new content strategy.)</em></p>
+<hr>
+<h3 id="8-contact-contact">8. Contact (<code>/contact</code>)</h3>
+<p><strong>SEO Target:</strong> &quot;contact trade in solutions irvine&quot;</p>
+<h4 id="sections">Sections:</h4>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Section</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Hero</strong></td>
+<td>&quot;Get In Touch&quot;</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Contact Form</strong></td>
+<td>Name, Email, Phone, Message + reCAPTCHA</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Contact Info</strong></td>
+<td>Address, phone, email, hours</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Map Embed</strong></td>
+<td>Google Map of Irvine location</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Quick Links</strong></td>
+<td>Links to FAQ, Appointments, Locations</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="9-privacy-policy-privacy-policy-new--split-from-about-us">9. Privacy Policy (<code>/privacy-policy</code>) <em>(NEW — split from About Us)</em></h3>
+<p><strong>Content:</strong></p>
+<ul>
+<li>Information Collection</li>
+<li>Data Collection Purpose</li>
+<li>Data Collection Methods</li>
+<li>Opt-Out Option</li>
+<li>Third-Party Data Sharing</li>
+<li>Data Retention</li>
+<li>Contact: info@tradeinsolutions-irvine.com</li>
+<li>Effective Date: Dec 15, 2023 (update on launch)</li>
+</ul>
+<hr>
+<h2 id="global-components-appear-on-allmost-pages">Global Components (appear on all/most pages)</h2>
+<h3 id="navigation">Navigation</h3>
+<ul>
+<li>Logo (left)</li>
+<li>Links: Home, About Us, FAQ, Appointments, Testimonials, Locations, Blog, Contact</li>
+<li>Phone number (click-to-call): (888) 427-2302</li>
+<li>CTA Button: &quot;Get a Free Appraisal&quot; → /schedule-appointment</li>
+<li>Mobile: Hamburger menu</li>
+</ul>
+<h3 id="footer">Footer</h3>
+<ul>
+<li>Logo + tagline</li>
+<li>Address &amp; contact info</li>
+<li>Quick links</li>
+<li>Social icons (Yelp, Google, Facebook if applicable)</li>
+<li>Privacy Policy link</li>
+<li>Copyright: © 2026 Trade-In Solutions Irvine</li>
+</ul>
+<h3 id="sticky-cta-banner-optional">Sticky CTA Banner (optional)</h3>
+<ul>
+<li>Appears after scrolling past hero</li>
+<li>&quot;GOT QUESTIONS? CONTACT US AT (888) 427-2302&quot;</li>
+<li>Dark blue background, gold/yellow text</li>
+</ul>
+<hr>
+<h2 id="feature-specification">Feature Specification</h2>
+<h3 id="phase-1-core-must-have-for-launch">Phase 1: Core (Must-Have for Launch)</h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Priority</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Static page generation</td>
+<td>P0</td>
+<td>All pages pre-rendered at build time for SEO</td>
+</tr>
+<tr>
+<td>Responsive design</td>
+<td>P0</td>
+<td>Mobile-first, works on all devices</td>
+</tr>
+<tr>
+<td>Contact form</td>
+<td>P0</td>
+<td>Name, email, phone, message → email notification</td>
+</tr>
+<tr>
+<td>Appointment form</td>
+<td>P0</td>
+<td>Enhanced form with vehicle details</td>
+</tr>
+<tr>
+<td>Google Maps embed</td>
+<td>P0</td>
+<td>On locations and contact pages</td>
+</tr>
+<tr>
+<td>Schema.org markup</td>
+<td>P0</td>
+<td>LocalBusiness, Service, FAQPage, Review</td>
+</tr>
+<tr>
+<td>301 redirects</td>
+<td>P0</td>
+<td>From old WordPress URLs to new Next.js URLs</td>
+</tr>
+<tr>
+<td>Meta tags &amp; Open Graph</td>
+<td>P0</td>
+<td>Every page has unique title, description, OG image</td>
+</tr>
+<tr>
+<td>Sitemap.xml</td>
+<td>P0</td>
+<td>Auto-generated</td>
+</tr>
+<tr>
+<td>reCAPTCHA v3</td>
+<td>P0</td>
+<td>Spam protection on all forms</td>
+</tr>
+</tbody>
+</table>
+<h3 id="phase-2-conversion-optimization-post-launch">Phase 2: Conversion Optimization (Post-Launch)</h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Priority</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Live chat widget</td>
+<td>P1</td>
+<td>Intercom, Tidio, or similar</td>
+</tr>
+<tr>
+<td>Calendly integration</td>
+<td>P1</td>
+<td>Self-service appointment booking</td>
+</tr>
+<tr>
+<td>SMS notifications</td>
+<td>P1</td>
+<td>Auto-SMS on form submission</td>
+</tr>
+<tr>
+<td>A/B testing</td>
+<td>P1</td>
+<td>Vercel Edge Config or Optimizely</td>
+</tr>
+<tr>
+<td>Exit-intent popup</td>
+<td>P1</td>
+<td>&quot;Wait! Get a free appraisal before you go&quot;</td>
+</tr>
+<tr>
+<td>Vehicle photo upload</td>
+<td>P1</td>
+<td>In appointment form</td>
+</tr>
+<tr>
+<td>Instant offer estimator</td>
+<td>P2</td>
+<td>Basic calculator (year, make, model, mileage → rough range)</td>
+</tr>
+<tr>
+<td>Retargeting pixels</td>
+<td>P2</td>
+<td>Facebook Pixel, Google Ads</td>
+</tr>
+</tbody>
+</table>
+<h3 id="phase-3-content--growth">Phase 3: Content &amp; Growth</h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Priority</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Blog content calendar</td>
+<td>P2</td>
+<td>2-4 posts/month for SEO</td>
+</tr>
+<tr>
+<td>Video testimonials</td>
+<td>P2</td>
+<td>Embed YouTube testimonials</td>
+</tr>
+<tr>
+<td>FAQ expansion</td>
+<td>P2</td>
+<td>Add more questions based on customer calls</td>
+</tr>
+<tr>
+<td>Multi-language (Spanish)</td>
+<td>P3</td>
+<td>Spanish version of key pages</td>
+</tr>
+<tr>
+<td>Reviews aggregation</td>
+<td>P3</td>
+<td>Pull Yelp/Google reviews via API</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="recommended-new-features-not-on-current-site">Recommended NEW Features (Not on Current Site)</h2>
+<p>These are features that would significantly improve lead generation and user experience:</p>
+<h3 id="1-instant-vehicle-value-estimator-%E2%AD%90-high-impact">1. <strong>Instant Vehicle Value Estimator</strong> ⭐ HIGH IMPACT</h3>
+<ul>
+<li>Simple form: Year, Make, Model, Mileage, Condition</li>
+<li>Returns a rough estimate range (&quot;$8,500 – $11,200&quot;)</li>
+<li>Captures lead info before showing estimate</li>
+<li>Major SEO draw — &quot;what's my car worth irvine&quot;</li>
+</ul>
+<h3 id="2-%22we-beat-your-offer%22-feature-%E2%AD%90-high-impact">2. <strong>&quot;We Beat Your Offer&quot; Feature</strong> ⭐ HIGH IMPACT</h3>
+<ul>
+<li>Upload competitor offer (photo or text)</li>
+<li>Form to submit for review</li>
+<li>Promise: &quot;We'll beat any written offer or give you $100&quot;</li>
+<li>Directly addresses their current competitive messaging</li>
+</ul>
+<h3 id="3-live-chat--ai-chatbot">3. <strong>Live Chat / AI Chatbot</strong></h3>
+<ul>
+<li>Answer common questions 24/7</li>
+<li>Qualify leads before human handoff</li>
+<li>&quot;What documents do I need?&quot; &quot;How long does it take?&quot;</li>
+</ul>
+<h3 id="4-video-hero-section">4. <strong>Video Hero Section</strong></h3>
+<ul>
+<li>30-60 second video showing the appraisal process</li>
+<li>Happy customers, actual location footage</li>
+<li>Builds trust immediately</li>
+</ul>
+<h3 id="5-beforeafter-case-studies">5. <strong>Before/After Case Studies</strong></h3>
+<ul>
+<li>&quot;Customer brought a dealer offer of $X, we paid $Y&quot;</li>
+<li>Real examples (with permission)</li>
+<li>Powerful social proof</li>
+</ul>
+<h3 id="6-document-checklist-widget">6. <strong>Document Checklist Widget</strong></h3>
+<ul>
+<li>Interactive: &quot;What to bring to your appointment&quot;</li>
+<li>Checklist based on situation (owned, financed, leased)</li>
+<li>Reduces friction/anxiety</li>
+</ul>
+<h3 id="7-service-area-map">7. <strong>Service Area Map</strong></h3>
+<ul>
+<li>Visual map showing service radius</li>
+<li>&quot;We serve all of Orange County, Los Angeles, and San Diego&quot;</li>
+<li>City-specific landing pages for SEO</li>
+</ul>
+<h3 id="8-trust-badges-section">8. <strong>Trust Badges Section</strong></h3>
+<ul>
+<li>BBB Accredited (if applicable)</li>
+<li>Licensed &amp; Bonded</li>
+<li>28+ Years in Business</li>
+<li>Yelp 5-Star Rating</li>
+<li>Google 5-Star Rating</li>
+</ul>
+<h3 id="9-faq-chat-interface">9. <strong>FAQ Chat Interface</strong></h3>
+<ul>
+<li>Instead of accordion, a searchable FAQ</li>
+<li>&quot;Ask a question...&quot; autocomplete</li>
+<li>Better UX for mobile</li>
+</ul>
+<h3 id="10-appointment-reminder-system">10. <strong>Appointment Reminder System</strong></h3>
+<ul>
+<li>Automated email/SMS 24h before appointment</li>
+<li>&quot;Here's what to bring&quot; reminder</li>
+<li>Reduces no-shows</li>
+</ul>
+<h3 id="11-blog-%E2%86%92-lead-magnet">11. <strong>Blog → Lead Magnet</strong></h3>
+<ul>
+<li>&quot;Download our free guide: 'How to Get the Most Money for Your Car'&quot;</li>
+<li>Email capture for nurture sequence</li>
+</ul>
+<h3 id="12-social-proof-ticker">12. <strong>Social Proof Ticker</strong></h3>
+<ul>
+<li>Marquee of recent sales: &quot;Just bought a 2019 BMW X5 in Irvine for $32,500&quot;</li>
+<li>Creates urgency and FOMO</li>
+</ul>
+<hr>
+<h2 id="url-redirect-map-wordpress-%E2%86%92-nextjs">URL Redirect Map (WordPress → Next.js)</h2>
+<table>
+<thead>
+<tr>
+<th>Old WordPress URL</th>
+<th>New Next.js URL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/</code></td>
+<td><code>/</code></td>
+</tr>
+<tr>
+<td><code>/about-us/</code></td>
+<td><code>/about-us</code></td>
+</tr>
+<tr>
+<td><code>/faq/</code></td>
+<td><code>/faq</code></td>
+</tr>
+<tr>
+<td><code>/schedule-appointment/</code></td>
+<td><code>/schedule-appointment</code></td>
+</tr>
+<tr>
+<td><code>/testimonials/</code></td>
+<td><code>/testimonials</code></td>
+</tr>
+<tr>
+<td><code>/branch-locations/</code></td>
+<td><code>/branch-locations</code></td>
+</tr>
+<tr>
+<td><code>/blog/</code></td>
+<td><code>/blog</code></td>
+</tr>
+<tr>
+<td><code>/blog/page/2/</code></td>
+<td><code>/blog?page=2</code></td>
+</tr>
+<tr>
+<td><code>/blog/[post-slug]/</code></td>
+<td><code>/blog/[slug]</code></td>
+</tr>
+<tr>
+<td><code>/contact/</code></td>
+<td><code>/contact</code></td>
+</tr>
+<tr>
+<td><code>/contact-2/</code></td>
+<td><code>/contact</code> (merge)</td>
+</tr>
+<tr>
+<td><code>/privacy-policy/</code> (embedded)</td>
+<td><code>/privacy-policy</code> (new)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="content-migration-inventory">Content Migration Inventory</h2>
+<table>
+<thead>
+<tr>
+<th>Content Type</th>
+<th>Source</th>
+<th>Destination</th>
+<th>Quantity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pages</td>
+<td>WordPress pages</td>
+<td>Sanity pages</td>
+<td>8</td>
+</tr>
+<tr>
+<td>Blog posts</td>
+<td>WordPress posts</td>
+<td>Sanity blog posts</td>
+<td>~20+</td>
+</tr>
+<tr>
+<td>Testimonials</td>
+<td>WordPress testimonials</td>
+<td>Sanity testimonials</td>
+<td>~28</td>
+</tr>
+<tr>
+<td>Images</td>
+<td>WordPress media</td>
+<td>Sanity assets / Cloudinary</td>
+<td>~50</td>
+</tr>
+<tr>
+<td>Navigation menus</td>
+<td>WordPress menus</td>
+<td>Sanity navigation</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Site settings</td>
+<td>WordPress customizer</td>
+<td>Sanity site settings</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="analytics--tracking-events">Analytics &amp; Tracking Events</h2>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Trigger</th>
+<th>Platform</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>page_view</td>
+<td>Every page load</td>
+<td>GA4</td>
+</tr>
+<tr>
+<td>click_phone</td>
+<td>Click phone number</td>
+<td>GA4 + GTM</td>
+</tr>
+<tr>
+<td>click_address</td>
+<td>Click address/directions</td>
+<td>GA4</td>
+</tr>
+<tr>
+<td>form_start</td>
+<td>Focus on any form field</td>
+<td>GA4</td>
+</tr>
+<tr>
+<td>form_submit</td>
+<td>Successful form submission</td>
+<td>GA4 + GTM</td>
+</tr>
+<tr>
+<td>appointment_booked</td>
+<td>Appointment form submitted</td>
+<td>GA4 (conversion)</td>
+</tr>
+<tr>
+<td>cta_click</td>
+<td>Click any primary CTA button</td>
+<td>GA4</td>
+</tr>
+<tr>
+<td>scroll_50 / scroll_90</td>
+<td>Scroll depth</td>
+<td>GA4</td>
+</tr>
+<tr>
+<td>outbound_click</td>
+<td>Click to Yelp/Google</td>
+<td>GA4</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="design-direction-notes">Design Direction Notes</h2>
+<ul>
+<li><strong>Color palette:</strong> Keep navy blue + gold/yellow accent (brand recognition)</li>
+<li><strong>Typography:</strong> Clean, modern sans-serif (Inter or similar)</li>
+<li><strong>Imagery:</strong> Real photos of the Irvine location, actual staff, real customers (with permission)</li>
+<li><strong>Tone:</strong> Professional, trustworthy, friendly, stress-free</li>
+<li><strong>Mobile:</strong> Phone number always tappable, forms thumb-friendly, click-to-call prominent</li>
+</ul>
+
+</body>
+</html>

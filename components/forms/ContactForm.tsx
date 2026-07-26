@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { executeRecaptcha } from "@/lib/recaptcha";
+import { trackFormStart, trackFormSubmit } from "@/lib/analytics";
 import {
   contactFormClientSchema,
   type ContactFormClientValues,
@@ -41,6 +42,7 @@ export function ContactForm() {
   async function onSubmit(values: ContactFormClientValues) {
     setStatus("loading");
     setErrorMessage(null);
+    trackFormSubmit("contact");
 
     try {
       const recaptchaToken = await executeRecaptcha("contact");
@@ -77,7 +79,11 @@ export function ContactForm() {
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Your name" {...field} />
+                  <Input
+                    placeholder="Your name"
+                    {...field}
+                    onFocus={() => trackFormStart("contact")}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

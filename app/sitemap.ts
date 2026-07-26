@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 
 import { getSiteUrl } from "@/lib/seo";
-import { getBlogSlugs } from "@/lib/sanity/fetch";
+import { getBlogSlugs } from "@/lib/cms/fetch";
 
 export const dynamic = "force-static";
 
@@ -15,6 +15,8 @@ const staticRoutes = [
   "/blog/",
   "/contact/",
   "/privacy-policy/",
+  "/beat-your-offer/",
+  "/value-estimator/",
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

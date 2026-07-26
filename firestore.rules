@@ -1,10 +1,88 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function isPublished() {
+      return resource.data.status == 'published';
+    }
+
+    function isPublishedData() {
+      return request.resource.data.status == 'published'
+        || request.resource.data.status == 'draft';
+    }
+
+    match /admins/{uid} {
+      allow read: if isAdmin() && request.auth.uid == uid;
+      allow write: if false;
+    }
+
     match /leads/{leadId} {
-      allow read: if false;
-      allow create: if false;
-      allow update, delete: if false;
+      allow read: if isAdmin();
+      allow create, update, delete: if false;
+    }
+
+    match /cmsSingletons/{docId} {
+      allow read: if isPublished() || isAdmin();
+      allow create, update: if isAdmin() && isPublishedData();
+      allow delete: if isAdmin();
+    }
+
+    match /cmsPages/{docId} {
+      allow read: if isPublished() || isAdmin();
+      allow create, update: if isAdmin() && isPublishedData();
+      allow delete: if isAdmin();
+    }
+
+    match /cmsBlogPosts/{docId} {
+      allow read: if isPublished() || isAdmin();
+      allow create, update: if isAdmin() && isPublishedData();
+      allow delete: if isAdmin();
+    }
+
+    match /cmsTestimonials/{docId} {
+      allow read: if isPublished() || isAdmin();
+      allow create, update: if isAdmin() && isPublishedData();
+      allow delete: if isAdmin();
+    }
+
+    match /cmsLocations/{docId} {
+      allow read: if isPublished() || isAdmin();
+      allow create, update: if isAdmin() && isPublishedData();
+      allow delete: if isAdmin();
+    }
+
+    match /cmsFaqItems/{docId} {
+      allow read: if isPublished() || isAdmin();
+      allow create, update: if isAdmin() && isPublishedData();
+      allow delete: if isAdmin();
+    }
+
+    match /cmsTeamMembers/{docId} {
+      allow read: if isPublished() || isAdmin();
+      allow create, update: if isAdmin() && isPublishedData();
+      allow delete: if isAdmin();
+    }
+
+    match /cmsTrustBadges/{docId} {
+      allow read: if isPublished() || isAdmin();
+      allow create, update: if isAdmin() && isPublishedData();
+      allow delete: if isAdmin();
+    }
+
+    match /cmsCaseStudies/{docId} {
+      allow read: if isPublished() || isAdmin();
+      allow create, update: if isAdmin() && isPublishedData();
+      allow delete: if isAdmin();
+    }
+
+    match /cmsSocialProofItems/{docId} {
+      allow read: if isPublished() || isAdmin();
+      allow create, update: if isAdmin() && isPublishedData();
+      allow delete: if isAdmin();
     }
   }
 }

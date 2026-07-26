@@ -44,31 +44,21 @@ export const appointmentForm = onRequest(
         return;
       }
 
-      const {
-        name,
-        email,
-        phone,
-        preferredDate,
-        preferredTime,
-        vehicleYear,
-        vehicleMake,
-        vehicleModel,
-        notes,
-      } = parsed.data;
-      await saveLead("appointment", {
-        name,
-        email,
-        phone,
-        preferredDate,
-        preferredTime,
-        vehicleYear,
-        vehicleMake,
-        vehicleModel,
-        notes,
-      });
+      const data = parsed.data;
+      await saveLead("appointment", data);
       await sendLeadEmail({
-        subject: `New appointment request from ${name}`,
-        html: `<p><strong>Name:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><p><strong>Phone:</strong> ${phone}</p><p><strong>Date:</strong> ${preferredDate}</p><p><strong>Time:</strong> ${preferredTime}</p><p><strong>Vehicle:</strong> ${[vehicleYear, vehicleMake, vehicleModel].filter(Boolean).join(" ") || "N/A"}</p><p><strong>Notes:</strong> ${notes ?? "N/A"}</p>`,
+        subject: `New appointment request from ${data.name}`,
+        html: `<p><strong>Name:</strong> ${data.name}</p>
+<p><strong>Email:</strong> ${data.email}</p>
+<p><strong>Phone:</strong> ${data.phone}</p>
+<p><strong>Date:</strong> ${data.preferredDate}</p>
+<p><strong>Time:</strong> ${data.preferredTime}</p>
+<p><strong>Vehicle:</strong> ${[data.vehicleYear, data.vehicleMake, data.vehicleModel].filter(Boolean).join(" ") || "N/A"}</p>
+<p><strong>Mileage:</strong> ${data.vehicleMileage ?? "N/A"}</p>
+<p><strong>Condition:</strong> ${data.conditionDescription ?? "N/A"}</p>
+<p><strong>Previous offer:</strong> ${data.hasPreviousOffer ? "Yes" : "No"}</p>
+<p><strong>Photos:</strong> ${data.photoUrls?.length ? data.photoUrls.join(", ") : "None"}</p>
+<p><strong>Notes:</strong> ${data.notes ?? "N/A"}</p>`,
       });
 
       res.status(200).json({ success: true });
