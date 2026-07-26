@@ -152,7 +152,27 @@ Without `FIREBASE_SERVICE_ACCOUNT`, CI builds use **fallback defaults** from `li
 
 ### CI service account IAM
 
-Grant the CI service account: **Firebase Admin**, **Service Account User**, **Cloud Functions Admin**, **Secret Manager Admin**. See prior IAM notes in git history if deploy fails on `ActAs` or secrets.
+Grant the CI service account (email from your `FIREBASE_SERVICE_ACCOUNT` JSON) these **project-level** roles:
+
+| Role                           | Why                                               |
+| ------------------------------ | ------------------------------------------------- |
+| **Firebase Admin** (or Editor) | Hosting + project deploy                          |
+| **Service Account User**       | `ActAs` on default compute service account        |
+| **Cloud Functions Admin**      | Deploy Gen 2 functions                            |
+| **Secret Manager Admin**       | Bind function secrets at deploy                   |
+| **Cloud Scheduler Admin**      | Deploy `appointmentReminder` (scheduled function) |
+
+If deploy fails with `cloudscheduler.jobs.update`, add **Cloud Scheduler Admin** in [Google Cloud IAM](https://console.cloud.google.com/iam-admin/iam?project=tradeinsolutions-6f0e9).
+
+Or via CLI (replace the service account email):
+
+```bash
+gcloud projects add-iam-policy-binding tradeinsolutions-6f0e9 \
+  --member="serviceAccount:YOUR_CI_SA@tradeinsolutions-6f0e9.iam.gserviceaccount.com" \
+  --role="roles/cloudscheduler.admin"
+```
+
+CI deploys HTTP functions even if the scheduler step fails; once IAM is fixed, `appointmentReminder` deploys on the next run.
 
 ## 10. Publish site workflow
 

@@ -82,4 +82,8 @@ jobs:
 
       - uses: google-github-actions/setup-gcloud@v2
 
-      - run: npx firebase-tools deploy --only functions,firestore:rules,storage --project tradeinsolutions-6f0e9 --non-interactive
+      - run: npx firebase-tools deploy --only functions:contactForm,functions:appointmentForm,functions:beatOfferForm,functions:valueEstimatorForm,functions:cmsPublish,firestore:rules,storage --project tradeinsolutions-6f0e9 --non-interactive
+
+      - name: Deploy scheduled appointmentReminder
+        continue-on-error: true
+        run: npx firebase-tools deploy --only functions:appointmentReminder --project tradeinsolutions-6f0e9 --non-interactive
