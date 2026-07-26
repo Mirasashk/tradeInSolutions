@@ -1,6 +1,9 @@
-import { StarRating } from "@/components/shared/StarRating";
+import { Star } from "lucide-react";
+
+import { PageHero } from "@/components/sections/PageHero";
+import { FinalCta } from "@/components/sections/FinalCta";
+import { TestimonialsGrid } from "@/components/sections/TestimonialsGrid";
 import { YelpBadge } from "@/components/sections/YelpBadge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { buildMetadataFromCms, buildReviewJsonLd } from "@/lib/seo";
 import { getSiteSettings, getTestimonials } from "@/lib/cms/fetch";
 import type { Testimonial } from "@/types";
@@ -10,7 +13,7 @@ export async function generateMetadata() {
   return buildMetadataFromCms({
     title: "Testimonials",
     description:
-      "Read reviews from customers who sold their cars to Trade-In Solutions Irvine.",
+      "Read reviews from customers across Orange County, Los Angeles, and San Diego who sold their cars to Trade-In Solutions Irvine.",
     path: "/testimonials/",
     settings,
   });
@@ -38,7 +41,7 @@ export default async function TestimonialsPage() {
   const jsonLd = buildReviewJsonLd(items);
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-16">
+    <div>
       {jsonLd ? (
         <script
           type="application/ld+json"
@@ -46,42 +49,31 @@ export default async function TestimonialsPage() {
         />
       ) : null}
 
-      <YelpBadge yelpUrl={settings.yelpUrl} rating={settings.yelpRating} />
+      <PageHero
+        eyebrow="Testimonials"
+        title="What Our Customers Say"
+        subtitle="Real reviews from real sellers across Orange County, Los Angeles, and San Diego."
+      >
+        <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-5 py-2 text-sm font-medium backdrop-blur">
+          <span className="flex items-center gap-0.5 text-brand-gold">
+            {Array.from({ length: Math.round(settings.yelpRating ?? 5) }).map(
+              (_, i) => (
+                <Star key={i} className="h-4 w-4 fill-current" />
+              ),
+            )}
+          </span>
+          People Love Us on Yelp
+        </span>
+      </PageHero>
 
-      <h1 className="mt-8 text-4xl font-bold text-brand-navy">Customer Testimonials</h1>
-      <div className="mt-8 grid gap-6 md:grid-cols-2">
-        {items.map((item) => (
-          <Card key={item._id}>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg">{item.name}</CardTitle>
-                {item.rating ? <StarRating rating={item.rating} /> : null}
-              </div>
-              <p className="text-sm text-muted-foreground">
-                {[item.location, item.carModel].filter(Boolean).join(" • ")}
-              </p>
-              {item.publishedAt ? (
-                <p className="text-xs text-muted-foreground">
-                  {new Date(item.publishedAt).toLocaleDateString()}
-                </p>
-              ) : null}
-            </CardHeader>
-            <CardContent>
-              <p className="italic text-muted-foreground">&ldquo;{item.quote}&rdquo;</p>
-              {item.videoUrl ? (
-                <div className="mt-4 aspect-video">
-                  <iframe
-                    src={item.videoUrl.includes("embed") ? item.videoUrl : undefined}
-                    title={`${item.name} testimonial`}
-                    className="h-full w-full rounded-lg"
-                    allowFullScreen
-                  />
-                </div>
-              ) : null}
-            </CardContent>
-          </Card>
-        ))}
+      <div className="mx-auto max-w-6xl px-4 py-16">
+        <TestimonialsGrid testimonials={items} />
+        <div className="mt-12">
+          <YelpBadge yelpUrl={settings.yelpUrl} rating={settings.yelpRating} />
+        </div>
       </div>
+
+      <FinalCta phone={settings.phone} />
     </div>
   );
 }

@@ -7,7 +7,11 @@ import { FormField } from "@/components/admin/FormField";
 import { MarkdownField } from "@/components/admin/MarkdownField";
 import { SaveBar } from "@/components/admin/SaveBar";
 import { Button } from "@/components/ui/button";
+import { CmsEditorLayout } from "@/components/admin/CmsEditorLayout";
+import { stripContentMeta } from "@/lib/admin/cms-content-meta";
+import { useCmsEditorMeta } from "@/lib/admin/use-cms-editor-meta";
 import { stripFirestoreId } from "@/lib/admin/strip-firestore-id";
+import { deleteWithFeedback } from "@/lib/admin/delete-with-feedback";
 import {
   CMS_COLLECTIONS,
   deleteCollectionDoc,
@@ -17,6 +21,7 @@ import {
 import type { PageContent } from "@/types";
 
 function PageEditForm() {
+  const editorMeta = useCmsEditorMeta();
   const searchParams = useSearchParams();
   const router = useRouter();
   const docId = searchParams.get("id");
@@ -54,6 +59,7 @@ function PageEditForm() {
         isNew ? null : docId,
         form,
         status,
+        editorMeta,
       );
       if (isNew) router.replace(`/admin/content/pages/edit/?id=${id}`);
     } finally {
@@ -64,7 +70,26 @@ function PageEditForm() {
   if (loading) return <p>Loading…</p>;
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <CmsEditorLayout
+      versionHistory={{
+        collectionPath: CMS_COLLECTIONS.pages,
+        docId: isNew ? null : docId,
+        currentData: form,
+        disabled: isNew,
+        saving,
+        onRestored: (data) =>
+          setForm(stripContentMeta(data) as Omit<PageContent, "_id">),
+        save: async (data, status, meta) => {
+          await saveCollectionDoc(
+            CMS_COLLECTIONS.pages,
+            isNew ? null : docId,
+            data,
+            status,
+            meta ?? editorMeta,
+          );
+        },
+      }}
+    >
       <h1 className="text-2xl font-semibold text-brand-navy">Edit page</h1>
       <FormField
         label="Title"
@@ -87,6 +112,7 @@ function PageEditForm() {
         value={form.body ?? ""}
         onChange={(v) => update("body", v)}
       />
+
       <SaveBar
         saving={saving}
         onSaveDraft={() => save("draft")}
@@ -96,14 +122,17 @@ function PageEditForm() {
         <Button
           variant="destructive"
           onClick={async () => {
-            await deleteCollectionDoc(CMS_COLLECTIONS.pages, docId);
-            router.push("/admin/content/pages/");
+            const deleted = await deleteWithFeedback(
+              () => deleteCollectionDoc(CMS_COLLECTIONS.pages, docId),
+              "page",
+            );
+            if (deleted) router.push("/admin/content/pages/");
           }}
         >
           Delete
         </Button>
       ) : null}
-    </div>
+    </CmsEditorLayout>
   );
 }
 

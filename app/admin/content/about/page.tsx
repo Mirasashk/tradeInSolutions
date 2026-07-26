@@ -4,8 +4,12 @@ import { useCallback, useEffect, useState } from "react";
 
 import { FormField } from "@/components/admin/FormField";
 import { MarkdownField } from "@/components/admin/MarkdownField";
+import { CmsEditorLayout } from "@/components/admin/CmsEditorLayout";
 import { SaveBar } from "@/components/admin/SaveBar";
+import { stripContentMeta } from "@/lib/admin/cms-content-meta";
+import { useCmsEditorMeta } from "@/lib/admin/use-cms-editor-meta";
 import {
+  CMS_COLLECTIONS,
   CMS_SINGLETON_IDS,
   getSingletonDoc,
   saveSingletonDoc,
@@ -15,6 +19,7 @@ import type { AboutPageContent } from "@/types";
 const DOC_ID = CMS_SINGLETON_IDS.aboutPage;
 
 export default function AboutAdminPage() {
+  const editorMeta = useCmsEditorMeta();
   const [form, setForm] = useState<AboutPageContent>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -36,7 +41,7 @@ export default function AboutAdminPage() {
   async function save(status: "draft" | "published") {
     setSaving(true);
     try {
-      await saveSingletonDoc(DOC_ID, form, status);
+      await saveSingletonDoc(DOC_ID, form, status, editorMeta);
     } finally {
       setSaving(false);
     }
@@ -45,7 +50,18 @@ export default function AboutAdminPage() {
   if (loading) return <p>Loading…</p>;
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <CmsEditorLayout
+      versionHistory={{
+        collectionPath: CMS_COLLECTIONS.singletons,
+        docId: DOC_ID,
+        currentData: form,
+        saving,
+        onRestored: (data) => setForm(stripContentMeta(data) as AboutPageContent),
+        save: async (data, status, meta) => {
+          await saveSingletonDoc(DOC_ID, data, status, meta ?? editorMeta);
+        },
+      }}
+    >
       <h1 className="text-2xl font-semibold text-brand-navy">About Page</h1>
       <p className="text-sm text-muted-foreground">
         Manage team members and trust badges from the Marketing section or Team / Trust
@@ -71,6 +87,6 @@ export default function AboutAdminPage() {
         onSaveDraft={() => save("draft")}
         onPublish={() => save("published")}
       />
-    </div>
+    </CmsEditorLayout>
   );
 }

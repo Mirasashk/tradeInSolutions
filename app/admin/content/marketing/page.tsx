@@ -4,9 +4,12 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 import { FormField } from "@/components/admin/FormField";
+import { CmsEditorLayout } from "@/components/admin/CmsEditorLayout";
 import { SaveBar } from "@/components/admin/SaveBar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { stripContentMeta } from "@/lib/admin/cms-content-meta";
+import { useCmsEditorMeta } from "@/lib/admin/use-cms-editor-meta";
 import {
   CMS_COLLECTIONS,
   CMS_SINGLETON_IDS,
@@ -17,6 +20,7 @@ import {
 import type { CaseStudy, LeadMagnet, SocialProofItem } from "@/types";
 
 export default function MarketingAdminPage() {
+  const editorMeta = useCmsEditorMeta();
   const [leadMagnet, setLeadMagnet] = useState<LeadMagnet>({});
   const [caseStudies, setCaseStudies] = useState<(CaseStudy & { id: string })[]>([]);
   const [socialProof, setSocialProof] = useState<(SocialProofItem & { id: string })[]>(
@@ -50,7 +54,12 @@ export default function MarketingAdminPage() {
   async function saveLeadMagnet(status: "draft" | "published") {
     setSaving(true);
     try {
-      await saveSingletonDoc(CMS_SINGLETON_IDS.leadMagnet, leadMagnet, status);
+      await saveSingletonDoc(
+        CMS_SINGLETON_IDS.leadMagnet,
+        leadMagnet,
+        status,
+        editorMeta,
+      );
     } finally {
       setSaving(false);
     }
@@ -62,7 +71,23 @@ export default function MarketingAdminPage() {
     <div className="space-y-10">
       <h1 className="text-2xl font-semibold text-brand-navy">Marketing</h1>
 
-      <section className="mx-auto max-w-2xl space-y-4">
+      <CmsEditorLayout
+        versionHistory={{
+          collectionPath: CMS_COLLECTIONS.singletons,
+          docId: CMS_SINGLETON_IDS.leadMagnet,
+          currentData: leadMagnet,
+          saving,
+          onRestored: (data) => setLeadMagnet(stripContentMeta(data) as LeadMagnet),
+          save: async (data, status, meta) => {
+            await saveSingletonDoc(
+              CMS_SINGLETON_IDS.leadMagnet,
+              data,
+              status,
+              meta ?? editorMeta,
+            );
+          },
+        }}
+      >
         <h2 className="text-lg font-medium">Lead magnet</h2>
         <FormField
           label="Title"
@@ -84,7 +109,7 @@ export default function MarketingAdminPage() {
           onSaveDraft={() => saveLeadMagnet("draft")}
           onPublish={() => saveLeadMagnet("published")}
         />
-      </section>
+      </CmsEditorLayout>
 
       <section className="space-y-4">
         <div className="flex items-center justify-between">

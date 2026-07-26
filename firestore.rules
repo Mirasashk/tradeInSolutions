@@ -84,5 +84,55 @@ service cloud.firestore {
       allow create, update: if isAdmin() && isPublishedData();
       allow delete: if isAdmin();
     }
+
+    match /cmsSingletons/{docId}/versions/{versionId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    match /cmsPages/{docId}/versions/{versionId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    match /cmsBlogPosts/{docId}/versions/{versionId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    match /cmsTestimonials/{docId}/versions/{versionId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    match /cmsLocations/{docId}/versions/{versionId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    match /cmsFaqItems/{docId}/versions/{versionId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    match /cmsTeamMembers/{docId}/versions/{versionId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    match /cmsTrustBadges/{docId}/versions/{versionId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    match /cmsCaseStudies/{docId}/versions/{versionId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    match /cmsSocialProofItems/{docId}/versions/{versionId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
   }
 }

@@ -14,8 +14,15 @@ import {
   getFirestore,
 } from "firebase/firestore";
 
-import { CMS_COLLECTIONS, CMS_SINGLETON_IDS, type CmsStatus } from "@/types/cms";
+import {
+  CMS_COLLECTIONS,
+  CMS_SINGLETON_IDS,
+  type CmsStatus,
+  type CmsWriteMeta,
+} from "@/types/cms";
 import type { AdminUser } from "@/types";
+
+import { sanitizeForFirestore } from "./sanitize-firestore-data";
 
 export function getClientDb() {
   const app = getFirebaseApp();
@@ -47,17 +54,30 @@ export async function getSingletonDoc<T>(
   return snap.data() as T & { status?: CmsStatus };
 }
 
+function withWriteMeta(data: DocumentData, meta?: CmsWriteMeta): DocumentData {
+  if (!meta?.uid) return data;
+
+  return {
+    ...data,
+    updatedBy: { uid: meta.uid, ...(meta.email ? { email: meta.email } : {}) },
+    ...(meta.restoredFromVersionId
+      ? { restoredFromVersionId: meta.restoredFromVersionId }
+      : {}),
+  };
+}
+
 export async function saveSingletonDoc(
   docId: string,
   data: DocumentData,
   status: CmsStatus,
+  meta?: CmsWriteMeta,
 ) {
   const db = getClientDb();
   const ref = doc(db, CMS_COLLECTIONS.singletons, docId);
   await setDoc(
     ref,
     {
-      ...data,
+      ...sanitizeForFirestore(withWriteMeta(data, meta)),
       status,
       updatedAt: serverTimestamp(),
       ...(status === "published" ? { publishedAt: serverTimestamp() } : {}),
@@ -97,13 +117,14 @@ export async function saveCollectionDoc(
   id: string | null,
   data: DocumentData,
   status: CmsStatus,
+  meta?: CmsWriteMeta,
 ) {
   const db = getClientDb();
   const docRef = id ? doc(db, collectionName, id) : doc(collection(db, collectionName));
   await setDoc(
     docRef,
     {
-      ...data,
+      ...sanitizeForFirestore(withWriteMeta(data, meta)),
       status,
       updatedAt: serverTimestamp(),
       ...(status === "published" ? { publishedAt: serverTimestamp() } : {}),

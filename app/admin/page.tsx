@@ -15,9 +15,14 @@ export default function AdminDashboardPage() {
 
   const shortcuts = [
     {
+      href: "/admin/appointments/",
+      label: "Appointments",
+      description: "Calendar view of appointment requests",
+    },
+    {
       href: "/admin/leads/",
       label: "View leads",
-      description: "Form submissions inbox",
+      description: "All form submissions inbox",
     },
     {
       href: "/admin/content/site-settings/",

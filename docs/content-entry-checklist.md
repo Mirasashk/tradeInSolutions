@@ -2,6 +2,8 @@
 
 Manual guide for editors using `/admin/`. After each batch: **Publish content**, then **Publish site** to rebuild production.
 
+> **Note:** all of this content can be seeded automatically from the original site with `npm run seed:cms` (see [setup-local.md](./setup-local.md)). Use this checklist when entering or revising content by hand.
+
 Sign in: `/admin/login/`
 
 ---

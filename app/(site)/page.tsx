@@ -1,17 +1,18 @@
-import Link from "next/link";
-
-import { BulletSection } from "@/components/sections/BulletSection";
-import { HeroSection, VideoHeroEmbed } from "@/components/sections/HeroSection";
-import { ProcessSteps } from "@/components/sections/ProcessSteps";
-import { QuickActionsGrid } from "@/components/sections/QuickActionsGrid";
+import { VideoHeroEmbed } from "@/components/sections/HeroSection";
+import { CaseStudiesSection } from "@/components/sections/CaseStudiesSection";
 import { SocialProofTicker } from "@/components/sections/SocialProofTicker";
-import { StatsTrustBar } from "@/components/sections/StatsTrustBar";
-import { TestimonialsSlider } from "@/components/sections/TestimonialsSlider";
 import { TrustBadgesRow } from "@/components/sections/TrustBadgesRow";
 import { YelpBadge } from "@/components/sections/YelpBadge";
-import { CaseStudiesSection } from "@/components/sections/CaseStudiesSection";
-import { Button } from "@/components/ui/button";
+import { FinalCta } from "@/components/sections/FinalCta";
+import { ProcessTimeline } from "@/components/sections/ProcessTimeline";
+import { HomeHero } from "@/components/sections/home/HomeHero";
+import { QuickActions } from "@/components/sections/home/QuickActions";
+import { StatsCounters } from "@/components/sections/home/StatsCounters";
+import { TestimonialsShowcase } from "@/components/sections/home/TestimonialsShowcase";
+import { WhySellSection } from "@/components/sections/home/WhySellSection";
+import { Reveal, SectionEyebrow } from "@/components/shared/motion";
 import { buildMetadataFromCms } from "@/lib/seo";
+import { defaultHomePage } from "@/lib/cms/defaults";
 import {
   getCaseStudies,
   getHomePage,
@@ -25,9 +26,9 @@ import type { SocialProofItem, Testimonial } from "@/types";
 export async function generateMetadata() {
   const settings = await getSiteSettings();
   return buildMetadataFromCms({
-    title: "Sell Your Car for Cash in Irvine",
+    title: "Sell My Car for Cash in Irvine & Orange County",
     description:
-      "Free appraisal, same-day payment, and a hassle-free car selling experience in Orange County.",
+      "Sell your car today, hassle free. Free expert appraisal, fair market-based offers, and same-day payment in 45 minutes or less. Serving Irvine, Orange County, Los Angeles & San Diego.",
     path: "/",
     settings,
   });
@@ -50,62 +51,54 @@ export default async function HomePage() {
 
   return (
     <div>
+      <HomeHero
+        headline={home.heroHeadline ?? defaultHomePage.heroHeadline!}
+        subheadline={home.heroSubheadline}
+        backgroundImage={home.heroImage}
+        primaryCtaLabel={home.heroPrimaryCtaLabel ?? "Get Your Free Appraisal"}
+        primaryCtaHref={home.heroPrimaryCtaHref ?? "/schedule-appointment/"}
+        secondaryCtaLabel={home.heroSecondaryCtaLabel ?? `Call ${settings.phone}`}
+        secondaryCtaHref={home.heroSecondaryCtaHref ?? "tel:8884272302"}
+      />
+
       {tickerItems.length ? <SocialProofTicker items={tickerItems} /> : null}
 
-      <HeroSection
-        title={home.heroHeadline ?? ""}
-        subtitle={home.heroSubheadline}
-        backgroundImage={home.heroImage}
-        videoUrl={home.videoUrl}
-      >
-        <Button
-          asChild
-          size="lg"
-          className="bg-brand-gold text-brand-navy hover:bg-brand-gold/90"
-        >
-          <Link href={home.heroPrimaryCtaHref ?? "/schedule-appointment/"}>
-            {home.heroPrimaryCtaLabel ?? "Get Your Free Appraisal"}
-          </Link>
-        </Button>
-        <Button
-          asChild
-          size="lg"
-          variant="outline"
-          className="border-white text-white hover:bg-white/10"
-        >
-          <Link href={home.heroSecondaryCtaHref ?? "tel:8884272302"}>
-            {home.heroSecondaryCtaLabel ?? "Call (888) 427-2302"}
-          </Link>
-        </Button>
-      </HeroSection>
+      <QuickActions />
+
+      <WhySellSection
+        whySellHeadline={home.whySellHeadline ?? defaultHomePage.whySellHeadline!}
+        whySellBullets={home.whySellBullets ?? defaultHomePage.whySellBullets!}
+        compareHeadline={home.compareHeadline ?? defaultHomePage.compareHeadline!}
+        compareBullets={home.compareBullets ?? defaultHomePage.compareBullets!}
+      />
+
+      <StatsCounters />
+
+      <ProcessTimeline />
 
       {home.videoUrl ? (
-        <div className="bg-brand-navy px-4 pb-12">
-          <VideoHeroEmbed url={home.videoUrl} title={home.heroHeadline ?? "Video"} />
-        </div>
+        <section className="px-4 pb-20">
+          <Reveal className="text-center">
+            <SectionEyebrow>Watch</SectionEyebrow>
+            <h2 className="mt-3 text-3xl font-bold text-brand-navy md:text-4xl">
+              See the Process for Yourself
+            </h2>
+            <VideoHeroEmbed
+              url={home.videoUrl}
+              title={home.heroHeadline ?? "How it works"}
+            />
+          </Reveal>
+        </section>
       ) : null}
 
-      <QuickActionsGrid />
+      <TestimonialsShowcase testimonials={testimonials as Testimonial[]} />
 
-      <BulletSection
-        headline={
-          home.whySellHeadline ?? "Why Should I Sell My Car to Trade-In Solutions?"
-        }
-        bullets={home.whySellBullets ?? []}
-      />
-
-      <BulletSection
-        id="compare-offers"
-        headline={home.compareHeadline ?? "Compare Other Offers to Trade-In Solutions"}
-        bullets={home.compareBullets ?? []}
-      />
-
-      <StatsTrustBar />
-      <ProcessSteps />
-      <TestimonialsSlider testimonials={testimonials as Testimonial[]} />
-      <TrustBadgesRow badges={trustBadges as never[]} />
       <CaseStudiesSection caseStudies={caseStudies as never[]} />
+
+      <TrustBadgesRow badges={trustBadges} />
       <YelpBadge yelpUrl={settings.yelpUrl} rating={settings.yelpRating} />
+
+      <FinalCta phone={settings.phone} />
     </div>
   );
 }

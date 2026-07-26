@@ -36,12 +36,25 @@ function withId<T>(id: string, data: DocData): T {
 }
 
 function stripMeta(data: DocData): DocData {
-  const { status, updatedAt, publishedAt, legacySanityId, ...rest } = data;
+  const {
+    status,
+    updatedAt,
+    publishedAt,
+    legacySanityId,
+    updatedBy,
+    restoredFromVersionId,
+    ...rest
+  } = data;
   void status;
   void updatedAt;
-  void publishedAt;
   void legacySanityId;
-  return rest;
+  void updatedBy;
+  void restoredFromVersionId;
+
+  // publishedAt doubles as displayable content (blog posts, testimonials).
+  // Keep it, normalized to an ISO string so it can cross the RSC boundary.
+  const publishedAtIso = timestampToIso(publishedAt);
+  return publishedAtIso ? { ...rest, publishedAt: publishedAtIso } : rest;
 }
 
 async function getSingleton<T>(docId: string): Promise<T | null> {

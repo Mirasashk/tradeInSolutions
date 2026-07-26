@@ -15,6 +15,7 @@ Build-time CMS data access via Firebase Admin SDK. Reads published Firestore doc
 - [x] Admin SDK init with service account or ADC
 - [x] Singleton and collection fetch for all content types
 - [x] Default fallbacks for site settings, navigation, home page
+- [x] `publishedAt` preserved through `stripMeta` (normalized to an ISO string) since blog posts and testimonials display it as content
 
 ## Remaining
 
@@ -24,6 +25,7 @@ Build-time CMS data access via Firebase Admin SDK. Reads published Firestore doc
 
 - Only reads documents with `status: "published"`.
 - Maps Firestore doc IDs to `_id` for compatibility with existing page components.
+- Meta fields (`status`, `updatedAt`, `legacySanityId`) are stripped before data crosses to components; `publishedAt` is kept as an ISO string.
 
 ## Notes
 

@@ -6,8 +6,12 @@ import { Suspense, useCallback, useEffect, useState } from "react";
 import { FormField } from "@/components/admin/FormField";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { MarkdownField } from "@/components/admin/MarkdownField";
+import { CmsEditorLayout } from "@/components/admin/CmsEditorLayout";
 import { SaveBar } from "@/components/admin/SaveBar";
 import { Button } from "@/components/ui/button";
+import { stripContentMeta } from "@/lib/admin/cms-content-meta";
+import { useCmsEditorMeta } from "@/lib/admin/use-cms-editor-meta";
+import { deleteWithFeedback } from "@/lib/admin/delete-with-feedback";
 import {
   CMS_COLLECTIONS,
   deleteCollectionDoc,
@@ -19,6 +23,7 @@ import type { BlogPost } from "@/types";
 type BlogForm = Omit<BlogPost, "_id"> & { id?: string };
 
 function BlogEditForm() {
+  const editorMeta = useCmsEditorMeta();
   const searchParams = useSearchParams();
   const router = useRouter();
   const docId = searchParams.get("id");
@@ -52,6 +57,7 @@ function BlogEditForm() {
         isNew ? null : docId,
         form,
         status,
+        editorMeta,
       );
       if (isNew) router.replace(`/admin/content/blog/edit/?id=${id}`);
     } finally {
@@ -60,21 +66,42 @@ function BlogEditForm() {
   }
 
   async function handleDelete() {
-    if (isNew || !docId || !confirm("Delete this post?")) return;
-    await deleteCollectionDoc(CMS_COLLECTIONS.blogPosts, docId);
-    router.push("/admin/content/blog/");
+    if (isNew || !docId) return;
+    const deleted = await deleteWithFeedback(
+      () => deleteCollectionDoc(CMS_COLLECTIONS.blogPosts, docId),
+      "blog post",
+    );
+    if (deleted) router.push("/admin/content/blog/");
   }
 
   if (loading) return <p>Loading…</p>;
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <CmsEditorLayout
+      versionHistory={{
+        collectionPath: CMS_COLLECTIONS.blogPosts,
+        docId: isNew ? null : docId,
+        currentData: form,
+        disabled: isNew,
+        saving,
+        onRestored: (data) => setForm(stripContentMeta(data) as BlogForm),
+        save: async (data, status, meta) => {
+          await saveCollectionDoc(
+            CMS_COLLECTIONS.blogPosts,
+            isNew ? null : docId,
+            data,
+            status,
+            meta ?? editorMeta,
+          );
+        },
+      }}
+    >
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold text-brand-navy">
           {isNew ? "New blog post" : "Edit blog post"}
         </h1>
         {!isNew ? (
-          <Button variant="destructive" size="sm" onClick={handleDelete}>
+          <Button variant="destructive" size="sm" onClick={() => void handleDelete()}>
             Delete
           </Button>
         ) : null}
@@ -132,7 +159,7 @@ function BlogEditForm() {
         onSaveDraft={() => save("draft")}
         onPublish={() => save("published")}
       />
-    </div>
+    </CmsEditorLayout>
   );
 }
 

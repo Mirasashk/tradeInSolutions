@@ -4,9 +4,13 @@ import { useCallback, useEffect, useState } from "react";
 
 import { FormField } from "@/components/admin/FormField";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
+import { CmsEditorLayout } from "@/components/admin/CmsEditorLayout";
 import { SaveBar } from "@/components/admin/SaveBar";
 import { StringListField } from "@/components/admin/StringListField";
+import { stripContentMeta } from "@/lib/admin/cms-content-meta";
+import { useCmsEditorMeta } from "@/lib/admin/use-cms-editor-meta";
 import {
+  CMS_COLLECTIONS,
   CMS_SINGLETON_IDS,
   getSingletonDoc,
   saveSingletonDoc,
@@ -16,6 +20,7 @@ import type { HomePageContent } from "@/types";
 const DOC_ID = CMS_SINGLETON_IDS.homePage;
 
 export default function HomePageAdminPage() {
+  const editorMeta = useCmsEditorMeta();
   const [form, setForm] = useState<HomePageContent>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -37,7 +42,7 @@ export default function HomePageAdminPage() {
   async function save(status: "draft" | "published") {
     setSaving(true);
     try {
-      await saveSingletonDoc(DOC_ID, form, status);
+      await saveSingletonDoc(DOC_ID, form, status, editorMeta);
     } finally {
       setSaving(false);
     }
@@ -46,7 +51,18 @@ export default function HomePageAdminPage() {
   if (loading) return <p>Loading…</p>;
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <CmsEditorLayout
+      versionHistory={{
+        collectionPath: CMS_COLLECTIONS.singletons,
+        docId: DOC_ID,
+        currentData: form,
+        saving,
+        onRestored: (data) => setForm(stripContentMeta(data) as HomePageContent),
+        save: async (data, status, meta) => {
+          await saveSingletonDoc(DOC_ID, data, status, meta ?? editorMeta);
+        },
+      }}
+    >
       <h1 className="text-2xl font-semibold text-brand-navy">Home Page</h1>
       <FormField
         label="Hero headline"
@@ -120,6 +136,6 @@ export default function HomePageAdminPage() {
         onSaveDraft={() => save("draft")}
         onPublish={() => save("published")}
       />
-    </div>
+    </CmsEditorLayout>
   );
 }

@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 
 import { getIdToken } from "@/lib/firebase/auth";
+import { CMS_SAVE_MESSAGES, getErrorMessage } from "@/lib/admin/cms-save-feedback";
 import { Button } from "@/components/ui/button";
 
 type SaveBarProps = {
@@ -13,11 +15,31 @@ type SaveBarProps = {
 
 export function SaveBar({ onSaveDraft, onPublish, saving }: SaveBarProps) {
   const [publishing, setPublishing] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
+
+  async function handleSaveDraft() {
+    try {
+      await onSaveDraft();
+      toast.success(CMS_SAVE_MESSAGES.draftSaved);
+    } catch (error) {
+      toast.error(CMS_SAVE_MESSAGES.draftFailed, {
+        description: getErrorMessage(error),
+      });
+    }
+  }
+
+  async function handlePublishContent() {
+    try {
+      await onPublish();
+      toast.success(CMS_SAVE_MESSAGES.contentPublished);
+    } catch (error) {
+      toast.error(CMS_SAVE_MESSAGES.publishFailed, {
+        description: getErrorMessage(error),
+      });
+    }
+  }
 
   async function handlePublishSite() {
     setPublishing(true);
-    setMessage(null);
     try {
       const token = await getIdToken();
       if (!token) throw new Error("Not authenticated");
@@ -32,9 +54,11 @@ export function SaveBar({ onSaveDraft, onPublish, saving }: SaveBarProps) {
         throw new Error(body.error ?? `Publish failed (${res.status})`);
       }
 
-      setMessage("Site rebuild triggered. Production will update in a few minutes.");
-    } catch (err) {
-      setMessage(err instanceof Error ? err.message : "Failed to publish site");
+      toast.success(CMS_SAVE_MESSAGES.siteRebuildTriggered);
+    } catch (error) {
+      toast.error(CMS_SAVE_MESSAGES.sitePublishFailed, {
+        description: getErrorMessage(error),
+      });
     } finally {
       setPublishing(false);
     }
@@ -42,16 +66,23 @@ export function SaveBar({ onSaveDraft, onPublish, saving }: SaveBarProps) {
 
   return (
     <div className="sticky bottom-0 z-10 -mx-8 mt-8 flex flex-wrap items-center gap-3 border-t bg-white px-8 py-4">
-      <Button variant="outline" disabled={saving} onClick={() => onSaveDraft()}>
+      <Button
+        variant="outline"
+        disabled={saving}
+        onClick={() => void handleSaveDraft()}
+      >
         {saving ? "Saving…" : "Save draft"}
       </Button>
-      <Button disabled={saving} onClick={() => onPublish()}>
+      <Button disabled={saving} onClick={() => void handlePublishContent()}>
         {saving ? "Saving…" : "Publish content"}
       </Button>
-      <Button variant="secondary" disabled={publishing} onClick={handlePublishSite}>
+      <Button
+        variant="secondary"
+        disabled={publishing}
+        onClick={() => void handlePublishSite()}
+      >
         {publishing ? "Triggering…" : "Publish site"}
       </Button>
-      {message ? <p className="text-sm text-muted-foreground">{message}</p> : null}
     </div>
   );
 }

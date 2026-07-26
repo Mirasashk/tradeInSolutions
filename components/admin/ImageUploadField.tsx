@@ -1,8 +1,10 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { toast } from "sonner";
 
 import { uploadCmsImage } from "@/lib/firebase/storage";
+import { CMS_SAVE_MESSAGES, getErrorMessage } from "@/lib/admin/cms-save-feedback";
 import type { CmsImage } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +34,10 @@ export function ImageUploadField({
     try {
       const image = await uploadCmsImage(file, collection, docId, value?.alt);
       onChange(image);
+    } catch (error) {
+      toast.error(CMS_SAVE_MESSAGES.uploadFailed, {
+        description: getErrorMessage(error),
+      });
     } finally {
       setUploading(false);
     }

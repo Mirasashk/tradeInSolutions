@@ -1,5 +1,40 @@
 export type CmsStatus = "draft" | "published";
 
+export type CmsVersionAction = "draft" | "published" | "revert" | "create";
+
+export type CmsWriteMeta = {
+  uid: string;
+  email?: string;
+  restoredFromVersionId?: string;
+};
+
+export type CmsVersion = {
+  id: string;
+  createdAt?: string;
+  createdBy?: { uid: string; email?: string };
+  action: CmsVersionAction;
+  status: CmsStatus;
+  snapshot: Record<string, unknown>;
+  restoredFromVersionId?: string;
+};
+
+export const CMS_VERSIONS_SUBCOLLECTION = "versions" as const;
+
+export const CMS_VERSIONED_COLLECTIONS = [
+  "cmsSingletons",
+  "cmsPages",
+  "cmsBlogPosts",
+  "cmsTestimonials",
+  "cmsLocations",
+  "cmsFaqItems",
+  "cmsTeamMembers",
+  "cmsTrustBadges",
+  "cmsCaseStudies",
+  "cmsSocialProofItems",
+] as const;
+
+export type CmsVersionedCollection = (typeof CMS_VERSIONED_COLLECTIONS)[number];
+
 export type CmsImage = {
   storagePath?: string;
   url?: string;
@@ -50,4 +85,23 @@ export type LeadRecord = {
   type: "contact" | "appointment" | "beat_offer" | "value_estimator";
   createdAt?: string;
   [key: string]: unknown;
+};
+
+export type AppointmentStatus = "pending" | "confirmed" | "completed" | "cancelled";
+
+export type AppointmentLead = LeadRecord & {
+  type: "appointment";
+  name: string;
+  email: string;
+  phone: string;
+  preferredDate: string;
+  preferredTime: string;
+  vehicleYear?: string;
+  vehicleMake?: string;
+  vehicleModel?: string;
+  vehicleMileage?: string;
+  conditionDescription?: string;
+  hasPreviousOffer?: boolean;
+  notes?: string;
+  appointmentStatus?: AppointmentStatus;
 };

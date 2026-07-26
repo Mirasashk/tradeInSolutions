@@ -1,6 +1,19 @@
 import type { CmsImage } from "./cms";
 
-export type { CmsImage, CmsStatus, CmsMeta, AdminUser, LeadRecord } from "./cms";
+export type {
+  CmsImage,
+  CmsStatus,
+  CmsMeta,
+  AdminUser,
+  LeadRecord,
+  AppointmentLead,
+  AppointmentStatus,
+  CmsVersion,
+  CmsVersionAction,
+  CmsWriteMeta,
+  CmsVersionedCollection,
+} from "./cms";
+export { CMS_VERSIONS_SUBCOLLECTION, CMS_VERSIONED_COLLECTIONS } from "./cms";
 
 /** @deprecated Use CmsImage */
 export type SanityImage = CmsImage;

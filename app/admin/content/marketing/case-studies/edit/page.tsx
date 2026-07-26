@@ -7,7 +7,11 @@ import { FormField } from "@/components/admin/FormField";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { SaveBar } from "@/components/admin/SaveBar";
 import { Button } from "@/components/ui/button";
+import { CmsEditorLayout } from "@/components/admin/CmsEditorLayout";
+import { stripContentMeta } from "@/lib/admin/cms-content-meta";
+import { useCmsEditorMeta } from "@/lib/admin/use-cms-editor-meta";
 import { stripFirestoreId } from "@/lib/admin/strip-firestore-id";
+import { deleteWithFeedback } from "@/lib/admin/delete-with-feedback";
 import {
   CMS_COLLECTIONS,
   deleteCollectionDoc,
@@ -17,6 +21,7 @@ import {
 import type { CaseStudy } from "@/types";
 
 function CaseStudyEditForm() {
+  const editorMeta = useCmsEditorMeta();
   const searchParams = useSearchParams();
   const router = useRouter();
   const docId = searchParams.get("id");
@@ -50,6 +55,7 @@ function CaseStudyEditForm() {
         isNew ? null : docId,
         form,
         status,
+        editorMeta,
       );
       if (isNew) router.replace(`/admin/content/marketing/case-studies/edit/?id=${id}`);
     } finally {
@@ -60,7 +66,25 @@ function CaseStudyEditForm() {
   if (loading) return <p>Loading…</p>;
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <CmsEditorLayout
+      versionHistory={{
+        collectionPath: CMS_COLLECTIONS.caseStudies,
+        docId: isNew ? null : docId,
+        currentData: form,
+        disabled: isNew,
+        saving,
+        onRestored: (data) => setForm(stripContentMeta(data) as Omit<CaseStudy, "_id">),
+        save: async (data, status, meta) => {
+          await saveCollectionDoc(
+            CMS_COLLECTIONS.caseStudies,
+            isNew ? null : docId,
+            data,
+            status,
+            meta ?? editorMeta,
+          );
+        },
+      }}
+    >
       <h1 className="text-2xl font-semibold text-brand-navy">Edit case study</h1>
       <FormField
         label="Customer name"
@@ -105,6 +129,7 @@ function CaseStudyEditForm() {
         collection="caseStudies"
         docId={docId ?? "new"}
       />
+
       <SaveBar
         saving={saving}
         onSaveDraft={() => save("draft")}
@@ -114,14 +139,17 @@ function CaseStudyEditForm() {
         <Button
           variant="destructive"
           onClick={async () => {
-            await deleteCollectionDoc(CMS_COLLECTIONS.caseStudies, docId);
-            router.push("/admin/content/marketing/");
+            const deleted = await deleteWithFeedback(
+              () => deleteCollectionDoc(CMS_COLLECTIONS.caseStudies, docId),
+              "case study",
+            );
+            if (deleted) router.push("/admin/content/marketing/");
           }}
         >
           Delete
         </Button>
       ) : null}
-    </div>
+    </CmsEditorLayout>
   );
 }
 

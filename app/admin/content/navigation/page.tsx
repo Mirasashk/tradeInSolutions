@@ -3,9 +3,13 @@
 import { useEffect, useState } from "react";
 
 import { FormField } from "@/components/admin/FormField";
+import { CmsEditorLayout } from "@/components/admin/CmsEditorLayout";
 import { SaveBar } from "@/components/admin/SaveBar";
 import { Button } from "@/components/ui/button";
+import { stripContentMeta } from "@/lib/admin/cms-content-meta";
+import { useCmsEditorMeta } from "@/lib/admin/use-cms-editor-meta";
 import {
+  CMS_COLLECTIONS,
   CMS_SINGLETON_IDS,
   getSingletonDoc,
   saveSingletonDoc,
@@ -15,6 +19,7 @@ import type { NavItem } from "@/types";
 const DOC_ID = CMS_SINGLETON_IDS.navigation;
 
 export default function NavigationAdminPage() {
+  const editorMeta = useCmsEditorMeta();
   const [items, setItems] = useState<NavItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -30,7 +35,7 @@ export default function NavigationAdminPage() {
     setSaving(true);
     try {
       const validItems = items.filter((item) => item.label.trim() && item.href.trim());
-      await saveSingletonDoc(DOC_ID, { items: validItems }, status);
+      await saveSingletonDoc(DOC_ID, { items: validItems }, status, editorMeta);
     } finally {
       setSaving(false);
     }
@@ -39,7 +44,21 @@ export default function NavigationAdminPage() {
   if (loading) return <p>Loading…</p>;
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <CmsEditorLayout
+      versionHistory={{
+        collectionPath: CMS_COLLECTIONS.singletons,
+        docId: DOC_ID,
+        currentData: { items },
+        saving,
+        onRestored: (data) => {
+          const restored = stripContentMeta(data) as { items?: NavItem[] };
+          setItems(restored.items ?? []);
+        },
+        save: async (data, status, meta) => {
+          await saveSingletonDoc(DOC_ID, data, status, meta ?? editorMeta);
+        },
+      }}
+    >
       <h1 className="text-2xl font-semibold text-brand-navy">Navigation</h1>
       {items.map((item, index) => (
         <div key={index} className="flex gap-2 rounded-md border p-4">
@@ -86,6 +105,6 @@ export default function NavigationAdminPage() {
         onSaveDraft={() => save("draft")}
         onPublish={() => save("published")}
       />
-    </div>
+    </CmsEditorLayout>
   );
 }

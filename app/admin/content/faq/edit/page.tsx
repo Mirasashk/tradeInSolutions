@@ -7,7 +7,11 @@ import { FormField } from "@/components/admin/FormField";
 import { MarkdownField } from "@/components/admin/MarkdownField";
 import { SaveBar } from "@/components/admin/SaveBar";
 import { Button } from "@/components/ui/button";
+import { CmsEditorLayout } from "@/components/admin/CmsEditorLayout";
+import { stripContentMeta } from "@/lib/admin/cms-content-meta";
+import { useCmsEditorMeta } from "@/lib/admin/use-cms-editor-meta";
 import { stripFirestoreId } from "@/lib/admin/strip-firestore-id";
+import { deleteWithFeedback } from "@/lib/admin/delete-with-feedback";
 import {
   CMS_COLLECTIONS,
   deleteCollectionDoc,
@@ -17,6 +21,7 @@ import {
 import type { FaqItem } from "@/types";
 
 function FaqEditForm() {
+  const editorMeta = useCmsEditorMeta();
   const searchParams = useSearchParams();
   const router = useRouter();
   const docId = searchParams.get("id");
@@ -50,6 +55,7 @@ function FaqEditForm() {
         isNew ? null : docId,
         form,
         status,
+        editorMeta,
       );
       if (isNew) router.replace(`/admin/content/faq/edit/?id=${id}`);
     } finally {
@@ -60,7 +66,25 @@ function FaqEditForm() {
   if (loading) return <p>Loading…</p>;
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <CmsEditorLayout
+      versionHistory={{
+        collectionPath: CMS_COLLECTIONS.faqItems,
+        docId: isNew ? null : docId,
+        currentData: form,
+        disabled: isNew,
+        saving,
+        onRestored: (data) => setForm(stripContentMeta(data) as Omit<FaqItem, "_id">),
+        save: async (data, status, meta) => {
+          await saveCollectionDoc(
+            CMS_COLLECTIONS.faqItems,
+            isNew ? null : docId,
+            data,
+            status,
+            meta ?? editorMeta,
+          );
+        },
+      }}
+    >
       <h1 className="text-2xl font-semibold text-brand-navy">Edit FAQ</h1>
       <FormField
         label="Question"
@@ -83,6 +107,7 @@ function FaqEditForm() {
         value={form.anchorId ?? ""}
         onChange={(v) => update("anchorId", v)}
       />
+
       <SaveBar
         saving={saving}
         onSaveDraft={() => save("draft")}
@@ -92,14 +117,17 @@ function FaqEditForm() {
         <Button
           variant="destructive"
           onClick={async () => {
-            await deleteCollectionDoc(CMS_COLLECTIONS.faqItems, docId);
-            router.push("/admin/content/faq/");
+            const deleted = await deleteWithFeedback(
+              () => deleteCollectionDoc(CMS_COLLECTIONS.faqItems, docId),
+              "FAQ item",
+            );
+            if (deleted) router.push("/admin/content/faq/");
           }}
         >
           Delete
         </Button>
       ) : null}
-    </div>
+    </CmsEditorLayout>
   );
 }
 

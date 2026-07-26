@@ -7,7 +7,11 @@ import { FormField } from "@/components/admin/FormField";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { SaveBar } from "@/components/admin/SaveBar";
 import { Button } from "@/components/ui/button";
+import { CmsEditorLayout } from "@/components/admin/CmsEditorLayout";
+import { stripContentMeta } from "@/lib/admin/cms-content-meta";
+import { useCmsEditorMeta } from "@/lib/admin/use-cms-editor-meta";
 import { stripFirestoreId } from "@/lib/admin/strip-firestore-id";
+import { deleteWithFeedback } from "@/lib/admin/delete-with-feedback";
 import {
   CMS_COLLECTIONS,
   deleteCollectionDoc,
@@ -17,6 +21,7 @@ import {
 import type { TrustBadge } from "@/types";
 
 function TrustBadgeEditForm() {
+  const editorMeta = useCmsEditorMeta();
   const searchParams = useSearchParams();
   const router = useRouter();
   const docId = searchParams.get("id");
@@ -50,6 +55,7 @@ function TrustBadgeEditForm() {
         isNew ? null : docId,
         form,
         status,
+        editorMeta,
       );
       if (isNew) router.replace(`/admin/content/trust-badges/edit/?id=${id}`);
     } finally {
@@ -60,7 +66,26 @@ function TrustBadgeEditForm() {
   if (loading) return <p>Loading…</p>;
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <CmsEditorLayout
+      versionHistory={{
+        collectionPath: CMS_COLLECTIONS.trustBadges,
+        docId: isNew ? null : docId,
+        currentData: form,
+        disabled: isNew,
+        saving,
+        onRestored: (data) =>
+          setForm(stripContentMeta(data) as Omit<TrustBadge, "_id">),
+        save: async (data, status, meta) => {
+          await saveCollectionDoc(
+            CMS_COLLECTIONS.trustBadges,
+            isNew ? null : docId,
+            data,
+            status,
+            meta ?? editorMeta,
+          );
+        },
+      }}
+    >
       <h1 className="text-2xl font-semibold text-brand-navy">Edit trust badge</h1>
       <FormField
         label="Label"
@@ -81,10 +106,11 @@ function TrustBadgeEditForm() {
       <ImageUploadField
         label="Icon"
         value={form.icon}
-        onChange={(v) => update("icon", v ?? undefined)}
+        onChange={(v) => update("icon", v)}
         collection="trustBadges"
         docId={docId ?? "new"}
       />
+
       <SaveBar
         saving={saving}
         onSaveDraft={() => save("draft")}
@@ -94,14 +120,17 @@ function TrustBadgeEditForm() {
         <Button
           variant="destructive"
           onClick={async () => {
-            await deleteCollectionDoc(CMS_COLLECTIONS.trustBadges, docId);
-            router.push("/admin/content/trust-badges/");
+            const deleted = await deleteWithFeedback(
+              () => deleteCollectionDoc(CMS_COLLECTIONS.trustBadges, docId),
+              "trust badge",
+            );
+            if (deleted) router.push("/admin/content/trust-badges/");
           }}
         >
           Delete
         </Button>
       ) : null}
-    </div>
+    </CmsEditorLayout>
   );
 }
 

@@ -75,11 +75,14 @@ npm ci --prefix functions
 
    `FIREBASE_SERVICE_ACCOUNT_JSON` also works if set to the **file path** or inline JSON — not just a bare filename unless you are in the repo root and the file exists there.
 
-4. Optional: seed default CMS singletons:
+4. Optional: seed the full CMS content set (all singletons, blog posts, testimonials, FAQ, locations, badges, pages) with images from `/assets`:
 
    ```bash
-   GOOGLE_APPLICATION_CREDENTIALS=./tradeinsolutions-6f0e9-firebase-adminsdk-fbsvc-8b933186b4.json node scripts/seed-cms-defaults.mjs
+   npm run seed:cms          # upsert content, report stray docs
+   npm run seed:cms -- --prune  # also demote non-seed published docs to draft
    ```
+
+   The script is idempotent: docs are matched by slug/name/question/label and updated in place; images already in Storage are not re-uploaded.
 
 5. Sign in at `/admin/login/` after `npm run dev`.
 

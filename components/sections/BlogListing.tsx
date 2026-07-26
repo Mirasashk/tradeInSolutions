@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { ArrowRight } from "lucide-react";
 
-import { SanityImage } from "@/components/shared/SanityImage";
+import { CmsImage } from "@/components/shared/CmsImage";
+import { Stagger, StaggerItem } from "@/components/shared/motion";
 import type { BlogPostSummary } from "@/types";
 
 const POSTS_PER_PAGE = 6;
@@ -31,8 +33,8 @@ export function BlogListing({ posts }: { posts: BlogPostSummary[] }) {
 
   if (!posts.length) {
     return (
-      <p className="mt-6 text-muted-foreground">
-        Blog posts will appear here once published in Sanity CMS.
+      <p className="mt-6 rounded-xl border border-dashed p-8 text-center text-muted-foreground">
+        Blog posts will appear here once published.
       </p>
     );
   }
@@ -40,89 +42,101 @@ export function BlogListing({ posts }: { posts: BlogPostSummary[] }) {
   return (
     <>
       {categories.length ? (
-        <div className="mt-4 flex flex-wrap gap-2">
-          <button
-            type="button"
+        <div className="mt-6 flex flex-wrap gap-2">
+          <CategoryPill
+            label="All"
+            active={!category}
             onClick={() => {
               setCategory(null);
               setPage(1);
             }}
-            className={`rounded-full border px-3 py-1 text-xs font-medium ${
-              !category
-                ? "border-brand-gold bg-brand-gold/10"
-                : "hover:border-brand-gold"
-            }`}
-          >
-            All
-          </button>
+          />
           {categories.map((cat) => (
-            <button
+            <CategoryPill
               key={cat}
-              type="button"
+              label={cat}
+              active={category === cat}
               onClick={() => {
                 setCategory(cat);
                 setPage(1);
               }}
-              className={`rounded-full border px-3 py-1 text-xs font-medium ${
-                category === cat
-                  ? "border-brand-gold bg-brand-gold/10"
-                  : "hover:border-brand-gold"
-              }`}
-            >
-              {cat}
-            </button>
+            />
           ))}
         </div>
       ) : null}
 
-      <div className="mt-8 grid gap-8 sm:grid-cols-2">
+      <Stagger
+        key={`${category ?? "all"}-${currentPage}`}
+        className="mt-8 grid gap-6 sm:grid-cols-2"
+      >
         {pagePosts.map((post) => (
-          <article key={post._id} className="group">
-            {post.mainImage ? (
-              <Link href={`/blog/${post.slug}/`}>
-                <SanityImage
-                  image={post.mainImage}
-                  alt={post.title}
-                  width={600}
-                  height={340}
-                  className="mb-4 aspect-video w-full rounded-lg object-cover"
-                />
+          <StaggerItem key={post._id} className="h-full">
+            <article className="group h-full">
+              <Link
+                href={`/blog/${post.slug}/`}
+                className="flex h-full flex-col overflow-hidden rounded-2xl border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+              >
+                {post.mainImage ? (
+                  <div className="overflow-hidden">
+                    <CmsImage
+                      image={post.mainImage}
+                      alt={post.title}
+                      width={600}
+                      height={340}
+                      className="aspect-video w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                ) : null}
+                <div className="flex flex-1 flex-col p-6">
+                  <div className="flex items-center gap-3 text-xs">
+                    {post.category ? (
+                      <span className="rounded-full bg-brand-gold/15 px-2.5 py-1 font-semibold uppercase tracking-wide text-brand-gold">
+                        {post.category}
+                      </span>
+                    ) : null}
+                    {post.publishedAt ? (
+                      <time className="text-muted-foreground">
+                        {new Date(post.publishedAt).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </time>
+                    ) : null}
+                  </div>
+                  <h2 className="mt-3 text-xl font-semibold text-brand-navy transition-colors group-hover:text-brand-gold">
+                    {post.title}
+                  </h2>
+                  {post.excerpt ? (
+                    <p className="mt-2 flex-1 text-sm text-muted-foreground">
+                      {post.excerpt}
+                    </p>
+                  ) : (
+                    <span className="flex-1" />
+                  )}
+                  <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-brand-gold">
+                    Read article
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </span>
+                </div>
               </Link>
-            ) : null}
-            {post.category ? (
-              <span className="text-xs font-medium uppercase text-brand-gold">
-                {post.category}
-              </span>
-            ) : null}
-            <Link
-              href={`/blog/${post.slug}/`}
-              className="mt-1 block text-xl font-semibold group-hover:text-brand-gold"
-            >
-              {post.title}
-            </Link>
-            {post.publishedAt ? (
-              <time className="mt-1 block text-xs text-muted-foreground">
-                {new Date(post.publishedAt).toLocaleDateString()}
-              </time>
-            ) : null}
-            {post.excerpt ? (
-              <p className="mt-2 text-sm text-muted-foreground">{post.excerpt}</p>
-            ) : null}
-          </article>
+            </article>
+          </StaggerItem>
         ))}
-      </div>
+      </Stagger>
 
       {totalPages > 1 ? (
-        <nav className="mt-10 flex justify-center gap-2">
+        <nav aria-label="Blog pagination" className="mt-10 flex justify-center gap-2">
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
             <button
               key={p}
               type="button"
               onClick={() => setPage(p)}
-              className={`rounded px-3 py-1 text-sm ${
+              aria-current={p === currentPage ? "page" : undefined}
+              className={`h-9 w-9 rounded-full text-sm font-medium transition-colors ${
                 p === currentPage
                   ? "bg-brand-navy text-white"
-                  : "border hover:border-brand-gold"
+                  : "border hover:border-brand-gold hover:text-brand-gold"
               }`}
             >
               {p}
@@ -131,5 +145,29 @@ export function BlogListing({ posts }: { posts: BlogPostSummary[] }) {
         </nav>
       ) : null}
     </>
+  );
+}
+
+function CategoryPill({
+  label,
+  active,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`rounded-full border px-4 py-1.5 text-xs font-semibold transition-colors ${
+        active
+          ? "border-brand-gold bg-brand-gold/15 text-brand-navy"
+          : "text-muted-foreground hover:border-brand-gold hover:text-brand-navy"
+      }`}
+    >
+      {label}
+    </button>
   );
 }

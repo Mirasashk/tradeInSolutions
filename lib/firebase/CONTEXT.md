@@ -8,6 +8,7 @@ Client-side Firebase SDK helpers for the admin panel: Auth, Firestore CRUD, and 
 
 - auth.ts: Sign in/out and ID token for cmsPublish
 - firestore.ts: Admin CMS and leads queries/writes
+- sanitize-firestore-data.ts: strips null/undefined before Firestore writes (uses deleteField)
 - storage.ts: Image upload and URL helpers
 
 ## Implemented
