@@ -9,6 +9,7 @@ Cross-page shared components: navigation, footer, banners, analytics wrappers, C
 - `Nav.tsx`, `Footer.tsx`, `AnnouncementBar.tsx`, `CTABanner.tsx`: global chrome
 - `motion.tsx`: reusable scroll-animation primitives (`Reveal`, `Stagger`, `StaggerItem`, `SectionEyebrow`)
 - `CmsImage.tsx`: Firebase Storage image wrapper (with deprecated `SanityImage` alias)
+- `MarkdownContent.tsx`, `PortableTextContent.tsx`: CMS markdown rendering (light-theme body text)
 - `Analytics.tsx`, `ScrollTracker.tsx`: GA4 tracking
 - `ExitIntentPopup.tsx`, `LiveChat.tsx`, `RecaptchaScript.tsx`: conversion/infra widgets
 
@@ -16,6 +17,7 @@ Cross-page shared components: navigation, footer, banners, analytics wrappers, C
 
 - [x] Global layout chrome (nav, footer, banners)
 - [x] Motion primitives with `useReducedMotion` support and viewport-once reveals
+- [x] Footer optional `footerLogo` from site settings (falls back to navbar logo)
 
 ## Remaining
 
@@ -28,4 +30,5 @@ Cross-page shared components: navigation, footer, banners, analytics wrappers, C
 
 ## Notes
 
+- Navbar uses `settings.logo`; footer prefers `settings.footerLogo` when set (for light variants on dark background).
 - `SectionEyebrow` gives consistent gold uppercase section labels across the homepage

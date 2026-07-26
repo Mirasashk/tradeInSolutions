@@ -9,7 +9,8 @@ Seed content datasets for `scripts/seed-cms-content.mjs`, mirroring the original
 - seed-blog-posts.mjs: 10 blog posts with full Markdown bodies, categories, dates, and main images.
 - seed-testimonials.mjs: 28 customer testimonials (6 homepage-slider + 22 from the testimonials page) with staggered `publishedAt` dates for ordering.
 - seed-faq-items.mjs: 12 FAQ items; the "beat another dealer's offer" item carries `anchorId: "compare-offers"` for the homepage deep link.
-- seed-site-content.mjs: singletons (siteSettings, navigation, homePage, aboutPage, appointmentPage, leadMagnet), 3 locations, team members, trust badges, social proof items, and the privacy-policy page.
+- seed-site-content.mjs: singletons (siteSettings, navigation, homePage, aboutPage, appointmentPage, leadMagnet), 3 locations, team members, trust badges, social proof items, and static pages (privacy-policy + info pages).
+- seed-info-pages.mjs: 4 informational pages (how-it-works, what-to-bring-for-the-sale, previous-offers, how-do-we-value-your-car) migrated from the legacy WordPress site.
 
 ## Implemented
 

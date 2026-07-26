@@ -15,6 +15,10 @@ const staticRoutes = [
   "/blog/",
   "/contact/",
   "/privacy-policy/",
+  "/how-it-works/",
+  "/what-to-bring-for-the-sale/",
+  "/previous-offers/",
+  "/how-do-we-value-your-car/",
   "/beat-your-offer/",
   "/value-estimator/",
 ];

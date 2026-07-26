@@ -57,7 +57,7 @@ export default async function AboutPage() {
             </h2>
           </Reveal>
           <Reveal delay={0.15}>
-            <div className="text-base leading-8 text-muted-foreground">
+            <div className="text-base leading-8 text-foreground">
               {about?.story ? (
                 <PortableTextContent value={about.story} />
               ) : (
@@ -88,7 +88,7 @@ export default async function AboutPage() {
                 <h2 className="text-2xl font-bold md:text-3xl">
                   Our Confidence Guarantee
                 </h2>
-                <div className="mt-4 leading-7 text-white/80">
+                <div className="mt-4 leading-7 text-white">
                   {about?.confidenceGuarantee ? (
                     <PortableTextContent value={about.confidenceGuarantee} />
                   ) : (

@@ -145,9 +145,16 @@ export default function SiteSettingsAdminPage() {
         onChange={(v) => update("exitIntentMessage", v)}
       />
       <ImageUploadField
-        label="Logo"
+        label="Logo (navbar)"
         value={form.logo}
         onChange={(v) => update("logo", v ?? undefined)}
+        collection="singletons"
+        docId={DOC_ID}
+      />
+      <ImageUploadField
+        label="Footer logo (optional — use a light/white variant for dark footer)"
+        value={form.footerLogo}
+        onChange={(v) => update("footerLogo", v ?? undefined)}
         collection="singletons"
         docId={DOC_ID}
       />

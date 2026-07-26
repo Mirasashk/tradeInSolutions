@@ -1,7 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Calendar, Car, HelpCircle, Scale } from "lucide-react";
+import {
+  ArrowRight,
+  Car,
+  ClipboardList,
+  HelpCircle,
+  Scale,
+  SearchCheck,
+} from "lucide-react";
 
 import {
   Reveal,
@@ -15,13 +22,13 @@ const actions = [
   {
     title: "How It Works",
     description: "See our simple 3-step process from appointment to check.",
-    href: "/about-us/",
+    href: "/how-it-works/",
     icon: HelpCircle,
   },
   {
     title: "Got Previous Offers?",
     description: "Bring any written offer — we'll compare it head to head.",
-    href: "/faq/#compare-offers",
+    href: "/previous-offers/",
     icon: Scale,
   },
   {
@@ -31,10 +38,16 @@ const actions = [
     icon: Car,
   },
   {
-    title: "Schedule Appointment",
-    description: "Book your free, no-obligation appraisal today.",
-    href: "/schedule-appointment/",
-    icon: Calendar,
+    title: "What to Bring for the Sale",
+    description: "Title, ID, keys, and registration — everything for a smooth sale.",
+    href: "/what-to-bring-for-the-sale/",
+    icon: ClipboardList,
+  },
+  {
+    title: "How Do We Value Your Car",
+    description: "See how our appraisers determine a fair, non-negotiable offer.",
+    href: "/how-do-we-value-your-car/",
+    icon: SearchCheck,
   },
 ];
 
@@ -48,7 +61,7 @@ export function QuickActions() {
         </h2>
       </Reveal>
 
-      <Stagger className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <Stagger className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {actions.map((action) => (
           <StaggerItem key={action.title} className="h-full">
             <Link

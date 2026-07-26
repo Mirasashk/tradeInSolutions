@@ -7,7 +7,7 @@ Redesigned homepage-only sections with framer-motion scroll animations. These ar
 ## Key files
 
 - `HomeHero.tsx`: full-height hero with parallax background, staggered entrance, trust chips, scroll cue
-- `QuickActions.tsx`: 4 action cards with stagger reveal and hover lift
+- `QuickActions.tsx`: 5 action cards (how-it-works, previous-offers, value estimator, what-to-bring, how-we-value) with stagger reveal and hover lift
 - `WhySellSection.tsx`: "Why sell" bullets + numbered "Compare offers" card (anchor `#compare-offers`)
 - `StatsCounters.tsx`: animated count-up stats band (28+ years, 45 min, 7 days, 1000s)
 - `TestimonialsShowcase.tsx`: auto-rotating testimonial slider with AnimatePresence, dots, arrows

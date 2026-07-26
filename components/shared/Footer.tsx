@@ -18,18 +18,19 @@ export function Footer({
   const links = navItems.filter(
     (item) => typeof item.href === "string" && item.href.length > 0 && item.label,
   );
+  const footerLogo = settings.footerLogo?.url ? settings.footerLogo : settings.logo;
 
   return (
     <footer className="border-t bg-brand-navy text-white">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 md:grid-cols-3">
         <div>
-          {settings.logo?.url ? (
+          {footerLogo?.url ? (
             <SanityImage
-              image={settings.logo}
+              image={footerLogo}
               alt="Trade-In Solutions Irvine"
               width={160}
               height={48}
-              className="mb-3 h-10 w-auto brightness-0 invert"
+              className="mb-3 h-10 w-auto"
             />
           ) : (
             <p className="text-lg font-bold">Trade-In Solutions Irvine</p>

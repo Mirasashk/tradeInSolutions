@@ -8,6 +8,7 @@ Reusable page sections mapped to site-outline-features.md (hero, process steps, 
 
 - `home/`: redesigned homepage sections with framer-motion scroll animations (see `home/CONTEXT.md`)
 - `PageHero.tsx`: compact navy hero for inner pages (about, faq, testimonials, contact, blog)
+- `CmsMarkdownPage.tsx`: shared layout for CMS markdown pages (PageHero + body + FinalCta + metadata helper)
 - `FinalCta.tsx`: closing conversion panel (home, about, testimonials, blog posts)
 - `ProcessTimeline.tsx`: animated 3-step process (home, about)
 - `TestimonialsGrid.tsx`: animated testimonial card grid (testimonials page)
@@ -23,6 +24,7 @@ Reusable page sections mapped to site-outline-features.md (hero, process steps, 
 - [x] All major sections from site outline
 - [x] Client components where interactivity required (slider, FAQ search, blog pagination)
 - [x] Homepage redesign with scroll animations (`home/`)
+- [x] `CmsMarkdownPage` for info pages (how-it-works, what-to-bring, previous-offers, how-do-we-value-your-car, privacy-policy)
 
 ## Remaining
 

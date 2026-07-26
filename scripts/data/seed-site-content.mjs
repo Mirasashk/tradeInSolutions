@@ -4,6 +4,8 @@
  * `file` values inside image fields refer to files in /assets.
  */
 
+import { infoPages } from "./seed-info-pages.mjs";
+
 export const singletons = {
   siteSettings: {
     phone: "(888) 427-2302",
@@ -330,4 +332,5 @@ By using our website, you agree to the terms outlined in this Privacy Policy. Th
 
 For any privacy-related inquiries, please contact us at info@tradeinsolutions-irvine.com.`,
   },
+  ...infoPages,
 ];

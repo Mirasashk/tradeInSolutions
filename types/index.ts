@@ -27,6 +27,7 @@ export type SiteSettings = {
   ctaBannerText?: string;
   tagline?: string;
   logo?: CmsImage;
+  footerLogo?: CmsImage;
   defaultOgImage?: CmsImage;
   yelpUrl?: string;
   yelpRating?: number;

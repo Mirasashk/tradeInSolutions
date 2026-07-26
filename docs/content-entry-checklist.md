@@ -12,19 +12,20 @@ Sign in: `/admin/login/`
 
 **Admin:** `/admin/content/site-settings/`
 
-| Field            | Suggested value                                       |
-| ---------------- | ----------------------------------------------------- |
-| phone            | (888) 427-2302                                        |
-| email            | info@tradeinsolutions-irvine.com                      |
-| address          | 9891 Irvine Center Drive, Suite 200, Irvine, CA 92618 |
-| hours            | Mon–Sat 9am–6pm                                       |
-| announcementText | FREE APPRAISALS — Call (888) 427-2302                 |
-| ctaBannerText    | GOT QUESTIONS? CONTACT US AT (888) 427-2302           |
-| tagline          | We buy cars for cash — hassle free.                   |
-| logo             | Upload brand logo                                     |
-| defaultOgImage   | 1200×630 social share image                           |
-| yelpUrl          | Your Yelp business URL                                |
-| yelpRating       | 5                                                     |
+| Field            | Suggested value                                           |
+| ---------------- | --------------------------------------------------------- |
+| phone            | (888) 427-2302                                            |
+| email            | info@tradeinsolutions-irvine.com                          |
+| address          | 9891 Irvine Center Drive, Suite 200, Irvine, CA 92618     |
+| hours            | Mon–Sat 9am–6pm                                           |
+| announcementText | FREE APPRAISALS — Call (888) 427-2302                     |
+| ctaBannerText    | GOT QUESTIONS? CONTACT US AT (888) 427-2302               |
+| tagline          | We buy cars for cash — hassle free.                       |
+| logo             | Upload brand logo (navbar — dark text OK on light header) |
+| footerLogo       | Optional light/white logo variant for dark footer         |
+| defaultOgImage   | 1200×630 social share image                               |
+| yelpUrl          | Your Yelp business URL                                    |
+| yelpRating       | 5                                                         |
 
 ---
 
@@ -120,7 +121,15 @@ Question, answer (Markdown), order, anchor ID.
 
 **Admin:** `/admin/content/pages/`
 
-Create page with slug `privacy-policy` for the privacy policy route.
+| Slug                         | Route                          |
+| ---------------------------- | ------------------------------ |
+| `privacy-policy`             | `/privacy-policy/`             |
+| `how-it-works`               | `/how-it-works/`               |
+| `what-to-bring-for-the-sale` | `/what-to-bring-for-the-sale/` |
+| `previous-offers`            | `/previous-offers/`            |
+| `how-do-we-value-your-car`   | `/how-do-we-value-your-car/`   |
+
+Each page: title, slug, SEO fields, Markdown body. Seeded via `npm run seed:cms` from `scripts/data/seed-info-pages.mjs`.
 
 ---
 
